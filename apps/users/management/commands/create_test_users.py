@@ -1,6 +1,5 @@
 from allauth.account.models import EmailAddress
 from django.core.management.base import BaseCommand
-from django.db import transaction
 
 from apps.users.models import User
 
@@ -33,7 +32,6 @@ password = "12345"  # noqa: S105
 class Command(BaseCommand):
     help = "Create or update test users in the database."
 
-    @transaction.atomic
     def handle(self, *args, **kwargs):
         for data in users:
             email = data["email"]
