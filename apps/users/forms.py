@@ -1,3 +1,4 @@
+from allauth.account.forms import ResetPasswordForm
 from allauth.account.forms import SignupForm
 from django import forms
 from django.contrib.auth import forms as admin_forms
@@ -54,3 +55,6 @@ class UserSignupForm(SignupForm):
         user.last_name = self.cleaned_data["last_name"]
         user.save()
         return user
+
+
+class UserPasswordResetForm(ResetPasswordForm): ...

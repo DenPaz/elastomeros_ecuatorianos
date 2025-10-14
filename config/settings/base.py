@@ -241,6 +241,7 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_ADAPTER = "apps.users.adapters.AccountAdapter"
 ACCOUNT_FORMS = {
     "signup": "apps.users.forms.UserSignupForm",
+    "reset_password": "apps.users.forms.UserPasswordResetForm",
 }
 
 # -----------------------------------------------------------------------------

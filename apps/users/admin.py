@@ -1,11 +1,13 @@
 from allauth.account.decorators import secure_admin_login
 from django.conf import settings
 from django.contrib import admin
+from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
+from .forms import UserPasswordResetForm
 from .models import User
 from .models import UserProfile
 
@@ -26,6 +28,7 @@ class UserAdmin(DjangoUserAdmin):
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
     inlines = [UserProfileInline]
+    actions = ["send_password_reset_email"]
     fieldsets = (
         (
             _("Account information"),
@@ -98,3 +101,25 @@ class UserAdmin(DjangoUserAdmin):
         "date_joined",
     ]
     list_per_page = 10
+
+    @admin.action(description=_("Send password reset email"))
+    def send_password_reset_email(self, request, queryset):
+        for user in queryset:
+            form = UserPasswordResetForm(data={"email": user.email})
+            if form.is_valid():
+                form.save(
+                    request=request,
+                    use_https=request.is_secure(),
+                )
+                self.message_user(
+                    request,
+                    _("Password reset email sent to %(email)s") % {"email": user.email},
+                    messages.SUCCESS,
+                )
+            else:
+                self.message_user(
+                    request,
+                    _("Failed to send password reset email to %(email)s")
+                    % {"email": user.email},
+                    messages.ERROR,
+                )
