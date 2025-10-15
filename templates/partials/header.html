@@ -1,2 +1,64 @@
 {% load i18n %}
 {% load static %}
+
+<header class="navbar navbar-expand-lg fixed-top bg-light border-bottom shadow-sm">
+  <div class="container justify-content-sm-between justify-content-center gap-2">
+    <a href="{% url 'store:index' %}"
+       class="navbar-brand order-lg-1 flex-shrink-0">
+      <img src="{% static 'images/logo-elastomeros-text.svg' %}"
+           class="h-35px"
+           alt="logo" />
+    </a>
+    <div class="nav align-items-center order-lg-3 gap-1">
+      <div class="nav-link form-check form-switch mode-switch p-2"
+           data-bs-toggle="mode">
+        <input id="theme-mode" type="checkbox" class="form-check-input" />
+        <label class="form-check-label" for="theme-mode">
+          <i class="ai-sun fs-lg"></i>
+        </label>
+        <label class="form-check-label" for="theme-mode">
+          <i class="ai-moon fs-lg"></i>
+        </label>
+      </div>
+      <a href="#" class="nav-link fs-4 p-2">
+        <i class="ai-search"></i>
+      </a>
+      <a href="#" class="nav-link fs-4 p-2">
+        <i class="ai-user"></i>
+      </a>
+      <a href="#cart-offcanvas"
+         class="nav-link fs-4 p-2"
+         data-bs-toggle="offcanvas">
+        <i class="ai-cart"></i>
+        <span class="badge badge-cart bg-primary">
+          0
+        </span>
+      </a>
+      <button type="button"
+              class="navbar-toggler p-3"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbar-nav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    <nav id="navbar-nav" class="collapse navbar-collapse order-lg-2">
+      <ul class="navbar-nav navbar-nav-scroll flex-lg-wrap mh-400px">
+        <li class="nav-item dropdown">
+          <a href="#"
+             class="nav-link dropdown-toggle"
+             data-bs-toggle="dropdown"
+             data-bs-auto-close="outside">
+            {% trans "Categories" %}
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a href="#" class="dropdown-item">
+                {% trans "Option 1" %}
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>

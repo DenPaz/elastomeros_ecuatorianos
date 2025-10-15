@@ -1,1 +1,1 @@
-# Elastomeros Ecuatorianos
+# Elastómeros Ecuatorianos

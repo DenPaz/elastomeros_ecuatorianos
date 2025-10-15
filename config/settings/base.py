@@ -81,7 +81,7 @@ THIRD_PARTY_APPS = [
 ]
 LOCAL_APPS = [
     "apps.core.config.CoreConfig",
-    "apps.home.config.HomeConfig",
+    "apps.store.config.StoreConfig",
     "apps.users.config.UsersConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -99,7 +99,7 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 AUTH_USER_MODEL = "users.User"
-LOGIN_REDIRECT_URL = "home:index"
+LOGIN_REDIRECT_URL = "store:index"
 LOGOUT_REDIRECT_URL = "account_login"
 LOGIN_URL = "account_login"
 
