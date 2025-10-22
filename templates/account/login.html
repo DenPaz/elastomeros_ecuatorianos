@@ -16,10 +16,9 @@
           </h1>
           {% if ACCOUNT_ALLOW_REGISTRATION %}
             <p>
-              {% trans "Don't have an account yet?" %}
-              <a href="{% url 'account_signup' %}">
-                {% trans "Register here" %}
-              </a>
+              {% blocktrans trimmed %}
+                Don't have an account yet? <a href="{{ signup_url }}">Register here</a>
+              {% endblocktrans %}
             </p>
           {% endif %}
         </div>
@@ -118,6 +117,16 @@
               <button type="submit" class="btn btn-lg btn-primary">
                 {% trans "Sign in" %}
               </button>
+              {% if LOGIN_BY_CODE_ENABLED %}
+                <div class="d-flex flex-column align-items-center gap-3 mt-3">
+                  <h6 class="text-muted">
+                    {% trans "or" %}
+                  </h6>
+                  <a href="{{ request_login_code_url }}">
+                    {% trans "Send me a sign-in code" %}
+                  </a>
+                </div>
+              {% endif %}
             </div>
           </form>
         {% endwith %}

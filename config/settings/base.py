@@ -243,6 +243,7 @@ ACCOUNT_FORMS = {
     "signup": "apps.users.forms.UserSignupForm",
     "reset_password": "apps.users.forms.UserPasswordResetForm",
 }
+ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 
 # -----------------------------------------------------------------------------
 # django-cotton
