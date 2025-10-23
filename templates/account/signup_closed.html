@@ -15,12 +15,13 @@
           </h1>
           <p>
             {% blocktrans trimmed %}
-              We are sorry, but the sign up is currently closed.
+              We are sorry, but the sign up process is currently closed. Please check back later or contact support for more information.
             {% endblocktrans %}
           </p>
         </div>
+        {% url 'account_login' as login_url %}
         <div class="d-flex flex-column gap-4 mt-4">
-          <a href="{% url 'account_login' %}" class="btn btn-lg btn-secondary">
+          <a href="{{ login_url }}" class="btn btn-lg btn-secondary">
             {% trans "Return to login" %}
           </a>
         </div>

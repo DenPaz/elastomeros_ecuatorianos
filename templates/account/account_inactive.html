@@ -15,12 +15,13 @@
           </h1>
           <p>
             {% blocktrans trimmed %}
-              This account is inactive.
+              This account is currently inactive. Please contact support for more information.
             {% endblocktrans %}
           </p>
         </div>
+        {% url 'account_login' as login_url %}
         <div class="d-flex flex-column gap-4 mt-4">
-          <a href="{% url 'account_login' %}" class="btn btn-lg btn-secondary">
+          <a href="{{ login_url }}" class="btn btn-lg btn-secondary">
             {% trans "Return to login" %}
           </a>
         </div>
