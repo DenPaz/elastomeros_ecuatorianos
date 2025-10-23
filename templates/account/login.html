@@ -4,7 +4,7 @@
 {% load widget_tweaks %}
 
 {% block title %}
-  {% trans "Login" %}
+  {% trans "Sign in" %}
 {% endblock title %}
 {% block content %}
   <section class="container py-5">
@@ -33,16 +33,14 @@
             </ul>
           </div>
         {% endif %}
+        {% url 'account_login' as login_url %}
+        {% url 'account_reset_password' as password_reset_url %}
+        {% trans "Email address" as email_label %}
+        {% trans "Password" as password_label %}
         {% with WIDGET_ERROR_CLASS="border-danger" %}
-          {% trans "Email address" as email_label %}
-          {% trans "Password" as password_label %}
-          <form method="post" action="{% url 'account_login' %}" novalidate>
+          <form method="post" action="{{ login_url }}" novalidate>
             {% csrf_token %}
-            {% if redirect_field_value %}
-              <input type="hidden"
-                     name="{{ redirect_field_name }}"
-                     value="{{ redirect_field_value }}" />
-            {% endif %}
+            {{ redirect_field }}
             <div class="d-flex flex-column gap-4 mt-4">
               <div class="d-flex flex-column gap-2 mb-2">
                 <label for="{{ form.login.id_for_label }}"
@@ -51,12 +49,7 @@
                 </label>
                 <div class="position-relative">
                   <i class="ai-mail fs-lg position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                  {% render_field form.login
-                  class="form-control form-control-lg ps-5"
-                  placeholder=email_label
-                  autocomplete="username"
-                  input_mode="email"
-                  autofocus="autofocus" %}
+                  {% render_field form.login class="form-control form-control-lg ps-5" placeholder=email_label autocomplete="username" input_mode="email" autofocus="autofocus" %}
                 </div>
                 {% if form.login.errors %}
                   <div class="invalid-feedback d-block">
@@ -78,10 +71,7 @@
                 <div class="position-relative">
                   <i class="ai-lock-closed fs-lg position-absolute top-50 start-0 translate-middle-y ms-3"></i>
                   <div class="password-toggle">
-                    {% render_field form.password
-                    class="form-control form-control-lg ps-5"
-                    placeholder=password_label
-                    autocomplete="current-password" %}
+                    {% render_field form.password class="form-control form-control-lg ps-5" placeholder=password_label autocomplete="current-password" %}
                     <label class="password-toggle-btn">
                       <input type="checkbox" class="password-toggle-check" />
                       <span class="password-toggle-indicator"></span>
@@ -100,17 +90,16 @@
                   </div>
                 {% endif %}
               </div>
-              <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
                 {% if form.remember %}
                   <div class="form-check">
-                    {% render_field form.remember
-                    class="form-check-input" %}
-                    <label class="form-check-label" for="{{ form.remember.id_for_label }}">
+                    {% render_field form.remember class="form-check-input" %}
+                    <label for="{{ form.remember.id_for_label }}" class="form-check-label">
                       {% trans "Remember me" %}
                     </label>
                   </div>
                 {% endif %}
-                <a href="{% url 'account_reset_password' %}">
+                <a href="{{ password_reset_url }}">
                   {% trans "Forgot password?" %}
                 </a>
               </div>
@@ -119,12 +108,14 @@
               </button>
               {% if LOGIN_BY_CODE_ENABLED %}
                 <div class="d-flex flex-column align-items-center gap-3 mt-3">
-                  <h6 class="text-muted">
-                    {% trans "or" %}
-                  </h6>
-                  <a href="{{ request_login_code_url }}">
-                    {% trans "Send me a sign-in code" %}
-                  </a>
+                  {% blocktrans trimmed %}
+                    <p class="h6 text-muted">
+                      or
+                    </p>
+                    <a href="{{ request_login_code_url }}">
+                      Sign in with a login code
+                    </a>
+                  {% endblocktrans %}
                 </div>
               {% endif %}
             </div>
