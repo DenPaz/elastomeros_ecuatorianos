@@ -31,19 +31,16 @@
             </ul>
           </div>
         {% endif %}
+        {% url 'account_signup' as signup_url %}
+        {% trans "First name" as first_name_label %}
+        {% trans "Last name" as last_name_label %}
+        {% trans "Email address" as email_label %}
+        {% trans "Password" as password_label %}
+        {% trans "Confirm password" as password2_label %}
         {% with WIDGET_ERROR_CLASS="border-danger" %}
-          {% trans "First name" as first_name_label %}
-          {% trans "Last name" as last_name_label %}
-          {% trans "Email address" as email_label %}
-          {% trans "Password" as password_label %}
-          {% trans "Confirm password" as password2_label %}
-          <form method="post" action="{% url 'account_signup' %}" novalidate>
+          <form method="post" action="{{ signup_url }}" novalidate>
             {% csrf_token %}
-            {% if redirect_field_value %}
-              <input type="hidden"
-                     name="{{ redirect_field_name }}"
-                     value="{{ redirect_field_value }}" />
-            {% endif %}
+            {{ redirect_field }}
             <div class="d-flex flex-column gap-4 mt-4">
               <div class="d-flex flex-column flex-md-row gap-4">
                 <div class="d-flex flex-column flex-fill gap-2 mb-2">
@@ -51,11 +48,7 @@
                          class="form-label visually-hidden">
                     {{ first_name_label }}
                   </label>
-                  {% render_field form.first_name
-                  class="form-control form-control-lg"
-                  placeholder=first_name_label
-                  autocomplete="given-name"
-                  autofocus="autofocus" %}
+                  {% render_field form.first_name class="form-control form-control-lg" placeholder=first_name_label autocomplete="given-name" autofocus="autofocus" %}
                   {% if form.first_name.errors %}
                     <div class="invalid-feedback d-block">
                       <ul class="list-unstyled mb-0">
@@ -73,10 +66,7 @@
                          class="form-label visually-hidden">
                     {{ last_name_label }}
                   </label>
-                  {% render_field form.last_name
-                  class="form-control form-control-lg"
-                  placeholder=last_name_label
-                  autocomplete="family-name" %}
+                  {% render_field form.last_name class="form-control form-control-lg" placeholder=last_name_label autocomplete="family-name" %}
                   {% if form.last_name.errors %}
                     <div class="invalid-feedback d-block">
                       <ul class="list-unstyled mb-0">
@@ -95,10 +85,7 @@
                        class="form-label visually-hidden">
                   {{ email_label }}
                 </label>
-                {% render_field form.email
-                class="form-control form-control-lg"
-                placeholder=email_label
-                autocomplete="email" %}
+                {% render_field form.email class="form-control form-control-lg" placeholder=email_label autocomplete="email" %}
                 {% if form.email.errors %}
                   <div class="invalid-feedback d-block">
                     <ul class="list-unstyled mb-0">
@@ -117,10 +104,7 @@
                          class="form-label visually-hidden">
                     {{ password_label }}
                   </label>
-                  {% render_field form.password1
-                  class="form-control form-control-lg"
-                  placeholder=password_label
-                  autocomplete="new-password" %}
+                  {% render_field form.password1 class="form-control form-control-lg" placeholder=password_label autocomplete="new-password" %}
                   <label class="password-toggle-btn">
                     <input type="checkbox" class="password-toggle-check" />
                     <span class="password-toggle-indicator"></span>
@@ -144,10 +128,7 @@
                          class="form-label visually-hidden">
                     {{ password2_label }}
                   </label>
-                  {% render_field form.password2
-                  class="form-control form-control-lg"
-                  placeholder=password2_label
-                  autocomplete="new-password" %}
+                  {% render_field form.password2 class="form-control form-control-lg" placeholder=password2_label autocomplete="new-password" %}
                   <label class="password-toggle-btn">
                     <input type="checkbox" class="password-toggle-check" />
                     <span class="password-toggle-indicator"></span>
@@ -165,12 +146,12 @@
                   </div>
                 {% endif %}
               </div>
-              <div class="text-muted fs-sm mb-2">
+              <p class="fs-6 text-muted mb-2">
                 {% blocktrans trimmed %}
                   Use 8 or more characters with a mix of letters (uppercase and
                   lowercase), numbers & symbols.
                 {% endblocktrans %}
-              </div>
+              </p>
               <button type="submit" class="btn btn-lg btn-primary">
                 {% trans "Sign up" %}
               </button>
