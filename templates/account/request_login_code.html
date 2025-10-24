@@ -32,16 +32,13 @@
             </ul>
           </div>
         {% endif %}
+        {% url 'account_request_login_code' as request_login_code_url %}
+        {% url 'account_login' as login_url %}
+        {% trans "Email address" as email_label %}
         {% with WIDGET_ERROR_CLASS="border-danger" %}
-          {% trans "Email address" as email_label %}
-          {% url 'account_request_login_code' as login_url %}
-          <form method="post" action="{{ login_url }}" novalidate>
+          <form method="post" action="{{ request_login_code_url }}" novalidate>
             {% csrf_token %}
-            {% if redirect_field_value %}
-              <input type="hidden"
-                     name="{{ redirect_field_name }}"
-                     value="{{ redirect_field_value }}" />
-            {% endif %}
+            {{ redirect_field }}
             <div class="d-flex flex-column gap-4 mt-4">
               <div class="d-flex flex-column gap-2 mb-2">
                 <label for="{{ form.email.id_for_label }}"
@@ -50,11 +47,7 @@
                 </label>
                 <div class="position-relative">
                   <i class="ai-mail fs-lg position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                  {% render_field form.email
-                  class="form-control form-control-lg ps-5"
-                  placeholder=email_label
-                  autocomplete="email"
-                  autofocus="autofocus" %}
+                  {% render_field form.email class="form-control form-control-lg ps-5" placeholder=email_label autocomplete="email" autofocus="autofocus" %}
                 </div>
                 {% if form.email.errors %}
                   <div class="invalid-feedback d-block">
@@ -71,7 +64,7 @@
               <button type="submit" class="btn btn-lg btn-primary">
                 {% trans "Request code" %}
               </button>
-              <a href="{% url 'account_login' %}" class="btn btn-lg btn-secondary">
+              <a href="{{ login_url }}" class="btn btn-lg btn-secondary">
                 {% trans "Other sign-in options" %}
               </a>
             </div>

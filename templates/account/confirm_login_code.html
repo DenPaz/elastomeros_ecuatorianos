@@ -32,29 +32,21 @@
             </ul>
           </div>
         {% endif %}
+        {% url 'account_confirm_login_code' as confirm_login_code_url %}
+        {% url 'account_logout' as logout_url %}
+        {% url 'account_login' as login_url %}
+        {% trans "Code" as code_label %}
         {% with WIDGET_ERROR_CLASS="border-danger" %}
-          {% trans "Code" as code_label %}
-          <form method="post"
-                action="{% url 'account_confirm_login_code' %}"
-                novalidate>
+          <form method="post" action="{{ confirm_login_code_url }}" novalidate>
             {% csrf_token %}
-            {% if redirect_field_value %}
-              <input type="hidden"
-                     name="{{ redirect_field_name }}"
-                     value="{{ redirect_field_value }}" />
-            {% endif %}
+            {{ redirect_field }}
             <div class="d-flex flex-column gap-4 mt-4">
               <div class="d-flex flex-column gap-2 mb-2">
                 <label for="{{ verify_form.code.id_for_label }}"
                        class="form-label visually-hidden">
                   {{ code_label }}
                 </label>
-                {% render_field verify_form.code
-                class="form-control form-control-lg"
-                placeholder=code_label
-                autocomplete="one-time-code"
-                inputmode="numeric"
-                autofocus="autofocus" %}
+                {% render_field verify_form.code class="form-control form-control-lg" placeholder=code_label autocomplete="one-time-code" inputmode="numeric" autofocus="autofocus" %}
                 {% if verify_form.code.errors %}
                   <div class="invalid-feedback d-block">
                     <ul class="list-unstyled mb-0">
@@ -93,7 +85,7 @@
         {% endwith %}
         <form id="resend"
               method="post"
-              action="{% url 'account_confirm_login_code' %}"
+              action="{{ confirm_login_code_url }}"
               class="d-none">
           <input type="hidden" name="action" value="resend" />
           {% if redirect_field_value %}
@@ -106,9 +98,9 @@
         {% if not cancel_url %}
           <form id="logout-from-stage"
                 method="post"
-                action="{% url 'account_logout' %}"
+                action="{{ logout_url }}"
                 class="d-none">
-            <input type="hidden" name="next" value="{% url 'account_login' %}" />
+            <input type="hidden" name="next" value="{{ login_url }}" />
             {% csrf_token %}
           </form>
         {% endif %}

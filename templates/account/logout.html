@@ -20,18 +20,16 @@
             {% endblocktrans %}
           </p>
         </div>
-        <form method="post" action="{% url 'account_logout' %}" novalidate>
+        {% url 'account_logout' as logout_url %}
+        {% url 'store:index' as home_url %}
+        <form method="post" action="{{ logout_url }}" novalidate>
           {% csrf_token %}
-          {% if redirect_field_value %}
-            <input type="hidden"
-                   name="{{ redirect_field_name }}"
-                   value="{{ redirect_field_value }}" />
-          {% endif %}
+          {{ redirect_field }}
           <div class="d-flex flex-column gap-4 mt-4">
             <button type="submit" class="btn btn-lg btn-primary">
               {% trans "Sign out" %}
             </button>
-            <a href="{% url 'store:index' %}" class="btn btn-lg btn-secondary">
+            <a href="{{ home_url }}" class="btn btn-lg btn-secondary">
               {% trans "Return to home" %}
             </a>
           </div>
