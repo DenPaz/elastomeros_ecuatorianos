@@ -98,7 +98,7 @@ dev = [
   "django-extensions==4.1",
   "djlint==1.36.4",
   "psycopg[binary]==3.2.11",
-  "ruff==0.14.1",
+  "ruff==0.14.2",
   "werkzeug[watchdog]==3.1.3",
 ]
 
