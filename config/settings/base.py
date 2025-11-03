@@ -244,8 +244,8 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_ADAPTER = "apps.users.adapters.AccountAdapter"
 ACCOUNT_FORMS = {
-    "signup": "apps.users.forms.UserSignupForm",
-    "reset_password": "apps.users.forms.UserPasswordResetForm",
+    "signup": "apps.users.forms_allauth.UserSignupForm",
+    "reset_password": "apps.users.forms_allauth.UserPasswordResetForm",
 }
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 

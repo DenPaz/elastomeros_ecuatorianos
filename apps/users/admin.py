@@ -5,9 +5,9 @@ from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .forms import UserAdminChangeForm
-from .forms import UserAdminCreationForm
-from .forms import UserPasswordResetForm
+from .forms_admin import UserAdminChangeForm
+from .forms_admin import UserAdminCreationForm
+from .forms_allauth import UserPasswordResetForm
 from .models import User
 from .models import UserProfile
 
