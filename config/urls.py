@@ -10,6 +10,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("", include("apps.store.urls", namespace="store")),
     path("users/", include("apps.users.urls", namespace="users")),
+    path("products/", include("apps.products.urls", namespace="products")),
+    path("orders/", include("apps.orders.urls", namespace="orders")),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
 
