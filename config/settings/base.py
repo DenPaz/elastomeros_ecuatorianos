@@ -29,6 +29,8 @@ LANGUAGES = [
     ("es", _("Spanish")),
 ]
 SITE_ID = 1
+SITE_NAME = "Elastómeros Ecuatorianos"
+SITE_DOMAIN = "elastomeros-ecuatorianos.ec"
 USE_I18N = True
 USE_TZ = True
 LOCALE_PATHS = [str(BASE_DIR / "locale")]
