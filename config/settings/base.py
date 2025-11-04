@@ -248,8 +248,17 @@ ACCOUNT_FORMS = {
     "reset_password": "apps.users.forms_allauth.UserPasswordResetForm",
 }
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
+ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False
+ACCOUNT_EMAIL_NOTIFICATIONS = True
+ACCOUNT_CHANGE_EMAIL = True
 
 # -----------------------------------------------------------------------------
 # django-cotton
 # -----------------------------------------------------------------------------
 COTTON_DIR = "components"
+
+# -----------------------------------------------------------------------------
+# django-phonenumber-field
+# -----------------------------------------------------------------------------
+PHONENUMBER_DEFAULT_FORMAT = "NATIONAL"
+PHONENUMBER_DEFAULT_REGION = "EC"
