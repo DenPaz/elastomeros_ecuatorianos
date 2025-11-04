@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% block title %}
+  {% trans "Server Error (500)" %}
+{% endblock title %}
+{% block content %}
+  <section class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-sm-10">
+        <div class="d-flex flex-column align-items-center gap-4">
+          <h1 class="display-5">
+            {% trans "Server Error (500)" %}
+          </h1>
+          <p class="fs-lg">
+            {% trans "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing." %}
+          </p>
+          <a href="{% url 'store:index' %}" class="btn btn-lg btn-primary">
+            {% trans "Go to homepage" %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock content %}
