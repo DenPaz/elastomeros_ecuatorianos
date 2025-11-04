@@ -32,11 +32,13 @@
         hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
     {% block body %}
       <main class="page-wrapper">
-        {% block header %}
-          {% include "partials/header.html" %}
-        {% endblock header %}
-        {% block content %}
-        {% endblock content %}
+        {% block main %}
+          {% block header %}
+            {% include "partials/header.html" %}
+          {% endblock header %}
+          {% block content %}
+          {% endblock content %}
+        {% endblock main %}
       </main>
       {% block footer %}
         {% include "partials/footer.html" %}
