@@ -4,7 +4,7 @@
 
 <header class="navbar navbar-expand-lg bg-light border-bottom shadow-sm sticky-top">
   <div class="container justify-content-sm-between justify-content-center gap-3">
-    <a href="{% url 'store:index' %}"
+    <a href="{% url 'shop:index' %}"
        class="navbar-brand flex-shrink-0 order-lg-1">
       <img src="{% static 'images/logo-elastomeros-text.svg' %}"
            class="h-35px"
@@ -101,8 +101,8 @@
     </div>
     <nav id="navbar-nav" class="collapse navbar-collapse order-lg-2">
       <ul class="navbar-nav navbar-nav-scroll flex-lg-wrap mh-400px">
-        <li class="nav-item {% active_class 'store:index' %}">
-          <a href="{% url 'store:index' %}" class="nav-link">
+        <li class="nav-item {% active_class 'shop:index' %}">
+          <a href="{% url 'shop:index' %}" class="nav-link">
             {% trans "Home" %}
           </a>
         </li>

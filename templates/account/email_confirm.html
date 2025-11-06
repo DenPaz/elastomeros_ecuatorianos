@@ -12,7 +12,7 @@
     <div class="row justify-content-center">
       <div class="col-lg-6 col-md-7 col-sm-10">
         {% url 'account_login' as login_url %}
-        {% url 'store:index' as home_url %}
+        {% url 'shop:index' as home_url %}
         {% if confirmation %}
           {% user_display confirmation.email_address.user as user_display %}
           <div class="d-flex flex-column align-items-center gap-2">

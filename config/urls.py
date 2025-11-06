@@ -8,7 +8,7 @@ from django.views import defaults as default_views
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("accounts/", include("allauth.urls")),
-    path("", include("apps.store.urls", namespace="store")),
+    path("", include("apps.shop.urls", namespace="shop")),
     path("users/", include("apps.users.urls", namespace="users")),
     path("products/", include("apps.products.urls", namespace="products")),
     path("orders/", include("apps.orders.urls", namespace="orders")),

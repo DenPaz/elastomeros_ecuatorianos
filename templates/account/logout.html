@@ -21,7 +21,7 @@
           </p>
         </div>
         {% url 'account_logout' as logout_url %}
-        {% url 'store:index' as home_url %}
+        {% url 'shop:index' as home_url %}
         <form method="post" action="{{ logout_url }}" novalidate>
           {% csrf_token %}
           {{ redirect_field }}

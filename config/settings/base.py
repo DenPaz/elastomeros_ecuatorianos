@@ -83,7 +83,7 @@ THIRD_PARTY_APPS = [
 ]
 LOCAL_APPS = [
     "apps.core.config.CoreConfig",
-    "apps.store.config.StoreConfig",
+    "apps.shop.config.ShopConfig",
     "apps.users.config.UsersConfig",
     "apps.products.config.ProductsConfig",
     "apps.orders.config.OrdersConfig",
@@ -103,7 +103,7 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 AUTH_USER_MODEL = "users.User"
-LOGIN_REDIRECT_URL = "store:index"
+LOGIN_REDIRECT_URL = "shop:index"
 LOGOUT_REDIRECT_URL = "account_login"
 LOGIN_URL = "account_login"
 
