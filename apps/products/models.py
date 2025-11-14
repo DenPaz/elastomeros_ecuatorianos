@@ -168,6 +168,12 @@ class Product(UUIDModel, TimeStampedModel):
     def __str__(self):
         return f"{self.name}"
 
+    def get_absolute_url(self):
+        return reverse(
+            "products:product_detail",
+            kwargs={"pk": self.pk, "slug": self.slug},
+        )
+
     def get_min_price(self):
         variants = self.variants.filter(is_active=True)
         if variants.exists():
