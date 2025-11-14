@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 
 from apps.users.models import User
 
-users = [
+data = [
     {
         "first_name": "Dennis",
         "last_name": "Paz",
@@ -33,23 +33,20 @@ class Command(BaseCommand):
     help = "Create or update test users in the database."
 
     def handle(self, *args, **kwargs):
-        for data in users:
-            email = data["email"]
+        for entry in data:
+            email = entry["email"]
             user, created = User.objects.update_or_create(
                 email=email,
-                defaults={**data},
+                defaults={**entry},
             )
             if created:
                 user.set_password(password)
                 user.save()
-                action = "Created"
-                style = self.style.SUCCESS
-            else:
-                action = "Updated"
-                style = self.style.WARNING
             EmailAddress.objects.update_or_create(
                 user=user,
                 email=email,
                 defaults={"primary": True, "verified": True},
             )
+            action = "Created" if created else "Updated"
+            style = self.style.SUCCESS if created else self.style.WARNING
             self.stdout.write(style(f"{action} user: {user}"))

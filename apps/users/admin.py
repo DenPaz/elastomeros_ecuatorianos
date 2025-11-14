@@ -8,12 +8,16 @@ from django.utils.translation import gettext_lazy as _
 from .forms_admin import UserAdminChangeForm
 from .forms_admin import UserAdminCreationForm
 from .forms_allauth import UserPasswordResetForm
+from .models import Address
 from .models import User
 from .models import UserProfile
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
     admin.autodiscover()
     admin.site.login = secure_admin_login(admin.site.login)
+
+
+admin.site.register(Address)
 
 
 class UserProfileInline(admin.StackedInline):

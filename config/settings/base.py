@@ -1,4 +1,5 @@
 # ruff: noqa: E501
+import ssl
 from pathlib import Path
 
 import environ
@@ -73,6 +74,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.mfa",
+    "django_celery_beat",
     "braces",
     "extra_views",
     "django_htmx",
@@ -80,11 +82,14 @@ THIRD_PARTY_APPS = [
     "django_cotton",
     "django_filters",
     "phonenumber_field",
+    "nested_admin",
 ]
 LOCAL_APPS = [
     "apps.core.config.CoreConfig",
     "apps.shop.config.ShopConfig",
     "apps.users.config.UsersConfig",
+    "apps.products.config.ProductsConfig",
+    "apps.cart.config.CartConfig",
     "apps.orders.config.OrdersConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -226,6 +231,28 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 # -----------------------------------------------------------------------------
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 REDIS_SSL = REDIS_URL.startswith("rediss://")
+
+# -----------------------------------------------------------------------------
+# celery
+# -----------------------------------------------------------------------------
+if USE_TZ:
+    CELERY_TIMEZONE = TIME_ZONE
+CELERY_BROKER_URL = REDIS_URL
+CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_NONE} if REDIS_SSL else None
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_REDIS_BACKEND_USE_SSL = CELERY_BROKER_USE_SSL
+CELERY_RESULT_EXTENDED = True
+CELERY_RESULT_BACKEND_ALWAYS_RETRY = True
+CELERY_RESULT_BACKEND_MAX_RETRIES = 10
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_TIME_LIMIT = 5 * 60
+CELERY_TASK_SOFT_TIME_LIMIT = 60
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_WORKER_SEND_TASK_EVENTS = True
+CELERY_TASK_SEND_SENT_EVENT = True
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 
 # -----------------------------------------------------------------------------
 # django-allauth
