@@ -8,6 +8,7 @@ from .models import Category
 from .models import Product
 from .models import ProductVariant
 from .models import ProductVariantAttributeValue
+from .models import ProductVariantImage
 
 
 @admin.register(Category)
@@ -35,13 +36,14 @@ class CategoryAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-class AttributeValueInline(admin.TabularInline):
+class AttributeValueInline(nested_admin.NestedTabularInline):
     model = AttributeValue
-    extra = 1
+    extra = 0
+    sortable_field_name = "sort_order"
 
 
 @admin.register(Attribute)
-class AttributeAdmin(admin.ModelAdmin):
+class AttributeAdmin(nested_admin.NestedModelAdmin):
     inlines = [AttributeValueInline]
     fieldsets = (
         (
@@ -65,17 +67,26 @@ class AttributeAdmin(admin.ModelAdmin):
 
 class ProductVariantAttributeValueInline(nested_admin.NestedTabularInline):
     model = ProductVariantAttributeValue
-    extra = 1
+    extra = 0
+
+
+class ProductVariantImageInline(nested_admin.NestedTabularInline):
+    model = ProductVariantImage
+    extra = 0
+    sortable_field_name = "sort_order"
 
 
 class ProductVariantInline(nested_admin.NestedTabularInline):
-    inlines = [ProductVariantAttributeValueInline]
+    inlines = [ProductVariantAttributeValueInline, ProductVariantImageInline]
     model = ProductVariant
-    extra = 1
+    extra = 0
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related("product").prefetch_related("attribute_values")
+        return qs.select_related("product").prefetch_related(
+            "attribute_values",
+            "images",
+        )
 
 
 @admin.register(Product)

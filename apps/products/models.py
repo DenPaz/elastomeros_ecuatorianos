@@ -11,6 +11,8 @@ from model_utils.models import UUIDModel
 
 from apps.core.utils import get_default_image_url
 
+from .utils import product_variant_image_upload_to
+
 
 class Category(UUIDModel, TimeStampedModel):
     name = models.CharField(
@@ -166,6 +168,26 @@ class Product(UUIDModel, TimeStampedModel):
     def __str__(self):
         return f"{self.name}"
 
+    def get_min_price(self):
+        variants = self.variants.filter(is_active=True)
+        if variants.exists():
+            return variants.aggregate(models.Min("price"))["price__min"]
+        return None
+
+    def get_max_price(self):
+        variants = self.variants.filter(is_active=True)
+        if variants.exists():
+            return variants.aggregate(models.Max("price"))["price__max"]
+        return None
+
+    def get_main_image(self):
+        first_variant = (
+            self.variants.filter(is_active=True).order_by("sort_order").first()
+        )
+        if first_variant:
+            return first_variant.get_default_image()
+        return get_default_image_url()
+
 
 class ProductVariant(UUIDModel, TimeStampedModel):
     product = models.ForeignKey(
@@ -211,12 +233,55 @@ class ProductVariant(UUIDModel, TimeStampedModel):
         ordering = ["product", "sort_order", "sku"]
 
     def __str__(self):
-        attribute_values = ", ".join(
-            str(av.value) for av in self.attribute_values.all()
-        )
+        attribute_values = self.get_attribute_value_display()
         if attribute_values:
             return f"{self.product.name} ({attribute_values})"
         return f"{self.product.name} (SKU: {self.sku})"
+
+    def get_attribute_value_display(self):
+        return ", ".join(str(av.value) for av in self.attribute_values.all())
+
+    def get_default_image(self):
+        default_image = (
+            self.images.filter(is_active=True).order_by("sort_order").first()
+        )
+        if default_image and default_image.image:
+            return default_image.image.url
+        return get_default_image_url()
+
+
+class ProductVariantImage(TimeStampedModel):
+    product_variant = models.ForeignKey(
+        to=ProductVariant,
+        verbose_name=_("Product variant"),
+        related_name="images",
+        on_delete=models.CASCADE,
+    )
+    image = models.ImageField(
+        verbose_name=_("Image"),
+        upload_to=product_variant_image_upload_to,
+    )
+    alt_text = models.CharField(
+        verbose_name=_("Alt text"),
+        max_length=255,
+        blank=True,
+    )
+    sort_order = models.PositiveIntegerField(
+        verbose_name=_("Sort order"),
+        default=0,
+    )
+    is_active = models.BooleanField(
+        verbose_name=_("Active"),
+        default=True,
+    )
+
+    class Meta:
+        verbose_name = _("Product variant image")
+        verbose_name_plural = _("Product variant images")
+        ordering = ["product_variant", "sort_order"]
+
+    def __str__(self):
+        return f"Image for {self.product_variant}"
 
 
 class ProductVariantAttributeValue(TimeStampedModel):
