@@ -73,6 +73,10 @@ class ProductVariantInline(nested_admin.NestedTabularInline):
     model = ProductVariant
     extra = 1
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("product").prefetch_related("attribute_values")
+
 
 @admin.register(Product)
 class ProductAdmin(nested_admin.NestedModelAdmin):
@@ -99,3 +103,7 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ["id", "created", "modified"]
     list_per_page = 10
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("category")

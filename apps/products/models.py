@@ -3,6 +3,8 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models.functions import Lower
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel
 from model_utils.models import UUIDModel
@@ -46,6 +48,12 @@ class Category(UUIDModel, TimeStampedModel):
 
     def __str__(self):
         return f"{self.name}"
+
+    def get_absolute_url(self):
+        return reverse(
+            "products:product_list_by_category",
+            kwargs={"category_slug": self.slug},
+        )
 
     def get_image_url(self):
         if self.image and hasattr(self.image, "url"):
@@ -106,7 +114,8 @@ class AttributeValue(TimeStampedModel):
         verbose_name_plural = _("Attribute values")
         constraints = [
             models.UniqueConstraint(
-                fields=["attribute", "value"],
+                Lower("value"),
+                "attribute",
                 name="unique_attribute_value",
             ),
         ]
@@ -121,13 +130,12 @@ class Product(UUIDModel, TimeStampedModel):
         to=Category,
         verbose_name=_("Category"),
         related_name="products",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
+        on_delete=models.PROTECT,
     )
     name = models.CharField(
         verbose_name=_("Name"),
         max_length=255,
+        unique=True,
     )
     slug = models.SlugField(
         verbose_name=_("Slug"),
@@ -151,8 +159,6 @@ class Product(UUIDModel, TimeStampedModel):
         verbose_name = _("Product")
         verbose_name_plural = _("Products")
         indexes = [
-            models.Index(fields=["id", "slug"]),
-            models.Index(fields=["name"]),
             models.Index(fields=["-created"]),
         ]
         ordering = ["sort_order", "name"]
@@ -161,7 +167,7 @@ class Product(UUIDModel, TimeStampedModel):
         return f"{self.name}"
 
 
-class ProductVariant(TimeStampedModel):
+class ProductVariant(UUIDModel, TimeStampedModel):
     product = models.ForeignKey(
         to=Product,
         verbose_name=_("Product"),
@@ -205,7 +211,12 @@ class ProductVariant(TimeStampedModel):
         ordering = ["product", "sort_order", "sku"]
 
     def __str__(self):
-        return f"{self.product.name} ({self.sku})"
+        attribute_values = ", ".join(
+            str(av.value) for av in self.attribute_values.all()
+        )
+        if attribute_values:
+            return f"{self.product.name} ({attribute_values})"
+        return f"{self.product.name} (SKU: {self.sku})"
 
 
 class ProductVariantAttributeValue(TimeStampedModel):
