@@ -114,11 +114,20 @@
             {% trans "Categories" %}
           </a>
           <ul class="dropdown-menu">
-            <li>
-              <a href="#" class="dropdown-item">
-                {% trans "Option 1" %}
-              </a>
-            </li>
+            {% for category in category_list %}
+              <li>
+                <a href="{{ category.get_absolute_url }}"
+                   class="dropdown-item {% active_class 'products:product_list_by_category' category_slug=category.slug %}">
+                  {{ category.name }}
+                </a>
+              </li>
+            {% empty %}
+              <li>
+                <span class="dropdown-item text-muted">
+                  {% trans "No categories found" %}
+                </span>
+              </li>
+            {% endfor %}
           </ul>
         </li>
       </ul>
