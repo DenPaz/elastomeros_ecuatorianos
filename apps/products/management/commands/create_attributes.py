@@ -6,13 +6,11 @@ data = [
     {
         "name": "Color de guantes",
         "description": "Atributo que define los colores disponibles para los guantes.",
-        "sort_order": 0,
         "is_active": True,
     },
     {
         "name": "Tamaño de guantes",
         "description": "Atributo que define los tamaños disponibles para los guantes.",
-        "sort_order": 1,
         "is_active": True,
     },
     {
@@ -21,7 +19,6 @@ data = [
             "Atributo que define los volúmenes disponibles para los recipientes "
             "de líquidos."
         ),
-        "sort_order": 2,
         "is_active": True,
     },
 ]

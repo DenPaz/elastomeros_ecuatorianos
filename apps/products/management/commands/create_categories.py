@@ -7,14 +7,12 @@ data = [
         "name": "Latex",
         "slug": "latex",
         "description": "Categoría para productos derivados del látex.",
-        "sort_order": 0,
         "is_active": True,
     },
     {
         "name": "Productos de caucho",
         "slug": "productos-de-caucho",
         "description": "Categoría para productos fabricados con caucho natural.",
-        "sort_order": 1,
         "is_active": True,
     },
 ]

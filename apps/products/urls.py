@@ -17,7 +17,7 @@ urlpatterns = [
         name="product_list_by_category",
     ),
     path(
-        route="<uuid:pk>/<slug:slug>/",
+        route="<slug:product_slug>/",
         view=ProductDetailView.as_view(),
         name="product_detail",
     ),

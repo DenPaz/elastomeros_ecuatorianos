@@ -1,3 +1,5 @@
+from django.db.models import Count
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django.views.generic import ListView
@@ -28,7 +30,16 @@ class ProductListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["category"] = getattr(self, "category", None)
-        context["categories"] = Category.objects.filter(is_active=True)
+        context["categories"] = (
+            Category.objects.filter(is_active=True)
+            .annotate(
+                product_count=Count(
+                    "products",
+                    filter=Q(products__is_active=True),
+                ),
+            )
+            .order_by("name")
+        )
         return context
 
 

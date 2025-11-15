@@ -111,21 +111,21 @@
              class="nav-link dropdown-toggle"
              data-bs-toggle="dropdown"
              data-bs-auto-close="outside">
-            {% trans "Categories" %}
+            {% trans "Catalog" %}
           </a>
           <ul class="dropdown-menu">
+            <li>
+              <a href="{% url 'products:product_list' %}"
+                 class="dropdown-item {% active_class 'products:product_list' %}">
+                {% trans "All products" %}
+              </a>
+            </li>
             {% for category in category_list %}
               <li>
                 <a href="{{ category.get_absolute_url }}"
                    class="dropdown-item {% active_class 'products:product_list_by_category' category_slug=category.slug %}">
                   {{ category.name }}
                 </a>
-              </li>
-            {% empty %}
-              <li>
-                <span class="dropdown-item text-muted">
-                  {% trans "No categories found" %}
-                </span>
               </li>
             {% endfor %}
           </ul>

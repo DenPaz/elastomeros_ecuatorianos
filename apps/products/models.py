@@ -37,6 +37,7 @@ class Category(UUIDModel, TimeStampedModel):
     is_active = models.BooleanField(
         verbose_name=_("Active"),
         default=True,
+        db_index=True,
     )
 
     class Meta:
@@ -129,6 +130,7 @@ class Product(UUIDModel, TimeStampedModel):
     name = models.CharField(
         verbose_name=_("Name"),
         max_length=255,
+        db_index=True,
     )
     slug = models.SlugField(
         verbose_name=_("Slug"),
@@ -146,6 +148,7 @@ class Product(UUIDModel, TimeStampedModel):
     is_active = models.BooleanField(
         verbose_name=_("Active"),
         default=True,
+        db_index=True,
     )
 
     class Meta:
@@ -158,7 +161,6 @@ class Product(UUIDModel, TimeStampedModel):
             ),
         ]
         indexes = [
-            models.Index(fields=["name"]),
             models.Index(fields=["-created"]),
         ]
         ordering = ["name"]
@@ -169,7 +171,7 @@ class Product(UUIDModel, TimeStampedModel):
     def get_absolute_url(self):
         return reverse(
             "products:product_detail",
-            kwargs={"pk": self.pk, "slug": self.slug},
+            kwargs={"product_slug": self.slug},
         )
 
     def get_default_image_url(self):
@@ -217,6 +219,7 @@ class ProductVariant(UUIDModel, TimeStampedModel):
     is_active = models.BooleanField(
         verbose_name=_("Active"),
         default=True,
+        db_index=True,
     )
 
     class Meta:
@@ -231,7 +234,12 @@ class ProductVariant(UUIDModel, TimeStampedModel):
         return f"{self.product.name} ({self.sku})"
 
     def get_attribute_value_display(self):
-        return ", ".join(str(av.value) for av in self.attribute_values.all())
+        qs = self.attribute_values.select_related("attribute").order_by(
+            "attribute__name",
+            "sort_order",
+            "value",
+        )
+        return ", ".join(av.value for av in qs)
 
     def get_default_image_url(self):
         first_image = self.images.filter(is_active=True).order_by("sort_order").first()
@@ -271,7 +279,7 @@ class ProductVariantImage(TimeStampedModel):
         ordering = ["product_variant", "sort_order"]
 
     def __str__(self):
-        return f"Image for {self.product_variant}"
+        return f"Image #{self.sort_order} for {self.product_variant}"
 
 
 class ProductVariantAttributeValue(TimeStampedModel):
