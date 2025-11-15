@@ -34,10 +34,6 @@ class Category(UUIDModel, TimeStampedModel):
         upload_to="products/categories/",
         blank=True,
     )
-    sort_order = models.PositiveIntegerField(
-        verbose_name=_("Sort order"),
-        default=0,
-    )
     is_active = models.BooleanField(
         verbose_name=_("Active"),
         default=True,
@@ -46,7 +42,7 @@ class Category(UUIDModel, TimeStampedModel):
     class Meta:
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
-        ordering = ["sort_order", "name"]
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"
@@ -73,10 +69,6 @@ class Attribute(TimeStampedModel):
         verbose_name=_("Description"),
         blank=True,
     )
-    sort_order = models.PositiveIntegerField(
-        verbose_name=_("Sort order"),
-        default=0,
-    )
     is_active = models.BooleanField(
         verbose_name=_("Active"),
         default=True,
@@ -85,7 +77,7 @@ class Attribute(TimeStampedModel):
     class Meta:
         verbose_name = _("Attribute")
         verbose_name_plural = _("Attributes")
-        ordering = ["sort_order", "name"]
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"
@@ -116,12 +108,12 @@ class AttributeValue(TimeStampedModel):
         verbose_name_plural = _("Attribute values")
         constraints = [
             models.UniqueConstraint(
-                Lower("value"),
                 "attribute",
-                name="unique_attribute_value",
+                Lower("value"),
+                name="unique_attribute_value_per_attribute",
             ),
         ]
-        ordering = ["sort_order", "value"]
+        ordering = ["attribute", "sort_order", "value"]
 
     def __str__(self):
         return f"{self.attribute.name}: {self.value}"
@@ -137,20 +129,19 @@ class Product(UUIDModel, TimeStampedModel):
     name = models.CharField(
         verbose_name=_("Name"),
         max_length=255,
-        unique=True,
     )
     slug = models.SlugField(
         verbose_name=_("Slug"),
         max_length=255,
         unique=True,
     )
-    description = models.TextField(
-        verbose_name=_("Description"),
+    short_description = models.TextField(
+        verbose_name=_("Short description"),
         blank=True,
     )
-    sort_order = models.PositiveIntegerField(
-        verbose_name=_("Sort order"),
-        default=0,
+    full_description = models.TextField(
+        verbose_name=_("Full description"),
+        blank=True,
     )
     is_active = models.BooleanField(
         verbose_name=_("Active"),
@@ -160,10 +151,17 @@ class Product(UUIDModel, TimeStampedModel):
     class Meta:
         verbose_name = _("Product")
         verbose_name_plural = _("Products")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["category", "name"],
+                name="unique_product_name_per_category",
+            ),
+        ]
         indexes = [
+            models.Index(fields=["name"]),
             models.Index(fields=["-created"]),
         ]
-        ordering = ["sort_order", "name"]
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"
@@ -174,24 +172,12 @@ class Product(UUIDModel, TimeStampedModel):
             kwargs={"pk": self.pk, "slug": self.slug},
         )
 
-    def get_min_price(self):
-        variants = self.variants.filter(is_active=True)
-        if variants.exists():
-            return variants.aggregate(models.Min("price"))["price__min"]
-        return None
-
-    def get_max_price(self):
-        variants = self.variants.filter(is_active=True)
-        if variants.exists():
-            return variants.aggregate(models.Max("price"))["price__max"]
-        return None
-
-    def get_main_image(self):
+    def get_default_image_url(self):
         first_variant = (
             self.variants.filter(is_active=True).order_by("sort_order").first()
         )
         if first_variant:
-            return first_variant.get_default_image()
+            return first_variant.get_default_image_url()
         return get_default_image_url()
 
 
@@ -204,7 +190,7 @@ class ProductVariant(UUIDModel, TimeStampedModel):
     )
     sku = models.CharField(
         verbose_name=_("SKU"),
-        max_length=50,
+        max_length=20,
         unique=True,
     )
     price = models.DecimalField(
@@ -242,17 +228,15 @@ class ProductVariant(UUIDModel, TimeStampedModel):
         attribute_values = self.get_attribute_value_display()
         if attribute_values:
             return f"{self.product.name} ({attribute_values})"
-        return f"{self.product.name} (SKU: {self.sku})"
+        return f"{self.product.name} ({self.sku})"
 
     def get_attribute_value_display(self):
         return ", ".join(str(av.value) for av in self.attribute_values.all())
 
-    def get_default_image(self):
-        default_image = (
-            self.images.filter(is_active=True).order_by("sort_order").first()
-        )
-        if default_image and default_image.image:
-            return default_image.image.url
+    def get_default_image_url(self):
+        first_image = self.images.filter(is_active=True).order_by("sort_order").first()
+        if first_image and first_image.image and hasattr(first_image.image, "url"):
+            return first_image.image.url
         return get_default_image_url()
 
 
