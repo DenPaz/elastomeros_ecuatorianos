@@ -192,7 +192,7 @@ class ProductVariant(UUIDModel, TimeStampedModel):
     )
     sku = models.CharField(
         verbose_name=_("SKU"),
-        max_length=20,
+        max_length=100,
         unique=True,
     )
     price = models.DecimalField(
