@@ -11,5 +11,4 @@ uv run manage.py update_default_site_object
 uv run manage.py create_test_users
 uv run manage.py create_categories
 uv run manage.py create_attributes
-uv run manage.py create_attribute_values
 uv run manage.py runserver
