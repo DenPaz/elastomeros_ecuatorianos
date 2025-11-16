@@ -11,6 +11,13 @@ from model_utils.models import UUIDModel
 
 from apps.core.utils import get_default_image_url
 
+from .managers import AttributeManager
+from .managers import AttributeValueManager
+from .managers import CategoryManager
+from .managers import ProductManager
+from .managers import ProductVariantAttributeValueManager
+from .managers import ProductVariantImageManager
+from .managers import ProductVariantManager
 from .utils import product_variant_image_upload_to
 
 
@@ -40,6 +47,8 @@ class Category(UUIDModel, TimeStampedModel):
         db_index=True,
     )
 
+    objects = CategoryManager()
+
     class Meta:
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
@@ -49,10 +58,7 @@ class Category(UUIDModel, TimeStampedModel):
         return f"{self.name}"
 
     def get_absolute_url(self):
-        return reverse(
-            "products:product_list_by_category",
-            kwargs={"category_slug": self.slug},
-        )
+        return reverse("products:product_list") + f"?category={self.slug}"
 
     def get_image_url(self):
         if self.image and hasattr(self.image, "url"):
@@ -73,7 +79,10 @@ class Attribute(TimeStampedModel):
     is_active = models.BooleanField(
         verbose_name=_("Active"),
         default=True,
+        db_index=True,
     )
+
+    objects = AttributeManager()
 
     class Meta:
         verbose_name = _("Attribute")
@@ -102,7 +111,10 @@ class AttributeValue(TimeStampedModel):
     is_active = models.BooleanField(
         verbose_name=_("Active"),
         default=True,
+        db_index=True,
     )
+
+    objects = AttributeValueManager()
 
     class Meta:
         verbose_name = _("Attribute value")
@@ -151,12 +163,15 @@ class Product(UUIDModel, TimeStampedModel):
         db_index=True,
     )
 
+    objects = ProductManager()
+
     class Meta:
         verbose_name = _("Product")
         verbose_name_plural = _("Products")
         constraints = [
             models.UniqueConstraint(
-                fields=["category", "name"],
+                "category",
+                Lower("name"),
                 name="unique_product_name_per_category",
             ),
         ]
@@ -169,18 +184,7 @@ class Product(UUIDModel, TimeStampedModel):
         return f"{self.name}"
 
     def get_absolute_url(self):
-        return reverse(
-            "products:product_detail",
-            kwargs={"product_slug": self.slug},
-        )
-
-    def get_default_image_url(self):
-        first_variant = (
-            self.variants.filter(is_active=True).order_by("sort_order").first()
-        )
-        if first_variant:
-            return first_variant.get_default_image_url()
-        return get_default_image_url()
+        return reverse("products:product_detail", kwargs={"slug": self.slug})
 
 
 class ProductVariant(UUIDModel, TimeStampedModel):
@@ -222,30 +226,15 @@ class ProductVariant(UUIDModel, TimeStampedModel):
         db_index=True,
     )
 
+    objects = ProductVariantManager()
+
     class Meta:
         verbose_name = _("Product variant")
         verbose_name_plural = _("Product variants")
         ordering = ["product", "sort_order", "sku"]
 
     def __str__(self):
-        attribute_values = self.get_attribute_value_display()
-        if attribute_values:
-            return f"{self.product.name} ({attribute_values})"
         return f"{self.product.name} ({self.sku})"
-
-    def get_attribute_value_display(self):
-        qs = self.attribute_values.select_related("attribute").order_by(
-            "attribute__name",
-            "sort_order",
-            "value",
-        )
-        return ", ".join(av.value for av in qs)
-
-    def get_default_image_url(self):
-        first_image = self.images.filter(is_active=True).order_by("sort_order").first()
-        if first_image and first_image.image and hasattr(first_image.image, "url"):
-            return first_image.image.url
-        return get_default_image_url()
 
 
 class ProductVariantImage(TimeStampedModel):
@@ -271,7 +260,10 @@ class ProductVariantImage(TimeStampedModel):
     is_active = models.BooleanField(
         verbose_name=_("Active"),
         default=True,
+        db_index=True,
     )
+
+    objects = ProductVariantImageManager()
 
     class Meta:
         verbose_name = _("Product variant image")
@@ -293,6 +285,8 @@ class ProductVariantAttributeValue(TimeStampedModel):
         verbose_name=_("Attribute value"),
         on_delete=models.CASCADE,
     )
+
+    objects = ProductVariantAttributeValueManager()
 
     class Meta:
         verbose_name = _("Product variant attribute value")
