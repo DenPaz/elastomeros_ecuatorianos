@@ -4,7 +4,7 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def active_class(
+def active_class(  # noqa: PLR0911
     context,
     *args,
     css_class="active",
@@ -24,9 +24,19 @@ def active_class(
         matches = any(current_view_name.startswith(name) for name in args)
     else:
         matches = current_view_name in args
-    if matches and kwargs:
-        current_kwargs = resolver_match.kwargs or {}
-        for key, value in kwargs.items():
-            if str(current_kwargs.get(key, "")) != str(value):
-                return ""
-    return css_class if matches else ""
+    if not matches:
+        return ""
+    tag_params = {str(k): str(v) for k, v in kwargs.items()}
+    request_params = {
+        str(k): str(v) for k, v in (request.resolver_match.kwargs or {}).items()
+    }
+    query_params = {str(k): str(v) for k, v in request.GET.items() if k != "page"}
+    request_params.update(query_params)
+    if not tag_params:
+        if not request_params:
+            return css_class
+        return ""
+    for key, value in tag_params.items():
+        if request_params.get(key) != value:
+            return ""
+    return css_class

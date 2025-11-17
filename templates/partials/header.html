@@ -120,11 +120,11 @@
                 {% trans "All products" %}
               </a>
             </li>
-            {% for category in category_list %}
+            {% for product_category in product_categories %}
               <li>
-                <a href="{{ category.get_absolute_url }}"
-                   class="dropdown-item {% active_class 'products:product_list_by_category' category_slug=category.slug %}">
-                  {{ category.name }}
+                <a href="{{ product_category.get_absolute_url }}"
+                   class="dropdown-item {% active_class 'products:product_list' category=product_category.slug %}">
+                  {{ product_category.name }}
                 </a>
               </li>
             {% endfor %}
