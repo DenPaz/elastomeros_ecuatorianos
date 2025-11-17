@@ -80,9 +80,10 @@ THIRD_PARTY_APPS = [
     "django_htmx",
     "widget_tweaks",
     "django_cotton",
+    "template_partials",
+    "nested_admin",
     "django_filters",
     "phonenumber_field",
-    "nested_admin",
 ]
 LOCAL_APPS = [
     "apps.core.config.CoreConfig",
