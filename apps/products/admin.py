@@ -67,6 +67,18 @@ class ProductVariantAttributeValueInline(nested_admin.NestedTabularInline):
     model = ProductVariantAttributeValue
     extra = 0
 
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "attribute_value",
+                "attribute_value__attribute",
+                "product_variant",
+                "product_variant__product",
+            )
+        )
+
 
 class ProductVariantImageInline(nested_admin.NestedTabularInline):
     model = ProductVariantImage
@@ -78,6 +90,9 @@ class ProductVariantInline(nested_admin.NestedTabularInline):
     inlines = [ProductVariantAttributeValueInline, ProductVariantImageInline]
     model = ProductVariant
     extra = 0
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("product")
 
 
 @admin.register(Product)

@@ -9,44 +9,34 @@ class BaseQuerySet(models.QuerySet):
     def active(self):
         return self.filter(is_active=True)
 
-    def inactive(self):
-        return self.filter(is_active=False)
-
 
 class BaseManager(models.Manager.from_queryset(BaseQuerySet)):
     pass
 
 
 class CategoryQuerySet(BaseQuerySet):
-    def _product_model(self):
-        return apps.get_model("products", "Product")
-
-    def with_products(self):
-        product = self._product_model()
-        queryset = product.objects.all()
-        return self.prefetch_related(Prefetch("products", queryset=queryset))
+    def _product_qs(self):
+        return apps.get_model("products", "Product").objects
 
     def with_active_products(self):
-        product = self._product_model()
-        queryset = product.objects.filter(is_active=True)
-        return self.prefetch_related(Prefetch("products", queryset=queryset))
-
-    def with_products_count(self):
-        return self.annotate(
-            products_count=Count(
+        return self.prefetch_related(
+            Prefetch(
                 "products",
-                distinct=True,
+                queryset=self._product_qs().active().order_by("name"),
             ),
         )
 
     def with_active_products_count(self):
         return self.annotate(
-            active_products_count=Count(
+            products_count=Count(
                 "products",
                 filter=Q(products__is_active=True),
                 distinct=True,
             ),
         )
+
+    def having_active_products(self):
+        return self.filter(products__is_active=True).distinct()
 
 
 class CategoryManager(BaseManager.from_queryset(CategoryQuerySet)):
@@ -54,18 +44,24 @@ class CategoryManager(BaseManager.from_queryset(CategoryQuerySet)):
 
 
 class AttributeQuerySet(BaseQuerySet):
-    def _attribute_value_model(self):
-        return apps.get_model("products", "AttributeValue")
+    def _attribute_value_qs(self):
+        return apps.get_model("products", "AttributeValue").objects
 
     def with_values(self):
-        attribute_value = self._attribute_value_model()
-        queryset = attribute_value.objects.all()
-        return self.prefetch_related(Prefetch("values", queryset=queryset))
+        return self.prefetch_related(
+            Prefetch(
+                "values",
+                queryset=self._attribute_value_qs().order_by("sort_order"),
+            ),
+        )
 
     def with_active_values(self):
-        attribute_value = self._attribute_value_model()
-        queryset = attribute_value.objects.filter(is_active=True)
-        return self.prefetch_related(Prefetch("values", queryset=queryset))
+        return self.prefetch_related(
+            Prefetch(
+                "values",
+                queryset=self._attribute_value_qs().active().order_by("sort_order"),
+            ),
+        )
 
 
 class AttributeManager(BaseManager.from_queryset(AttributeQuerySet)):
@@ -76,10 +72,6 @@ class AttributeValueQuerySet(BaseQuerySet):
     def with_attribute(self):
         return self.select_related("attribute")
 
-    def for_attribute(self, attribute):
-        attr_id = getattr(attribute, "pk", attribute)
-        return self.filter(attribute_id=attr_id)
-
 
 class AttributeValueManager(BaseManager.from_queryset(AttributeValueQuerySet)):
     def get_queryset(self):
@@ -87,7 +79,44 @@ class AttributeValueManager(BaseManager.from_queryset(AttributeValueQuerySet)):
 
 
 class ProductQuerySet(BaseQuerySet):
-    pass
+    def _product_variant_qs(self):
+        return apps.get_model("products", "ProductVariant").objects
+
+    def _product_variant_image_qs(self):
+        return apps.get_model("products", "ProductVariantImage").objects
+
+    def with_category(self):
+        return self.select_related("category")
+
+    def with_active_variants(self):
+        return self.prefetch_related(
+            Prefetch(
+                "variants",
+                queryset=self._product_variant_qs()
+                .active()
+                .order_by("sort_order", "sku")
+                .prefetch_related(
+                    Prefetch(
+                        "images",
+                        queryset=self._product_variant_image_qs()
+                        .active()
+                        .order_by("sort_order"),
+                    ),
+                ),
+            ),
+        )
+
+    def with_price_range(self):
+        return self.annotate(
+            min_price=models.Min(
+                "variants__price",
+                filter=Q(variants__is_active=True),
+            ),
+            max_price=models.Max(
+                "variants__price",
+                filter=Q(variants__is_active=True),
+            ),
+        )
 
 
 class ProductManager(BaseManager.from_queryset(ProductQuerySet)):
@@ -103,20 +132,12 @@ class ProductVariantManager(BaseManager.from_queryset(ProductVariantQuerySet)):
 
 
 class ProductVariantImageQuerySet(BaseQuerySet):
-    pass
+    def with_product_and_variant(self):
+        return self.select_related("product_variant", "product_variant__product")
 
 
 class ProductVariantImageManager(
     BaseManager.from_queryset(ProductVariantImageQuerySet),
 ):
-    pass
-
-
-class ProductVariantAttributeValueQuerySet(BaseQuerySet):
-    pass
-
-
-class ProductVariantAttributeValueManager(
-    BaseManager.from_queryset(ProductVariantAttributeValueQuerySet),
-):
-    pass
+    def get_queryset(self):
+        return super().get_queryset().with_product_and_variant()

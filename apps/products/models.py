@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.functions import Lower
@@ -10,12 +11,12 @@ from model_utils.models import TimeStampedModel
 from model_utils.models import UUIDModel
 
 from apps.core.utils import get_default_image_url
+from apps.core.validators import FileSizeValidator
 
 from .managers import AttributeManager
 from .managers import AttributeValueManager
 from .managers import CategoryManager
 from .managers import ProductManager
-from .managers import ProductVariantAttributeValueManager
 from .managers import ProductVariantImageManager
 from .managers import ProductVariantManager
 from .utils import product_variant_image_upload_to
@@ -39,6 +40,10 @@ class Category(UUIDModel, TimeStampedModel):
     image = models.ImageField(
         verbose_name=_("Image"),
         upload_to="products/categories/",
+        validators=[
+            FileSizeValidator(max_size=5, unit="MB"),
+            FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png"]),
+        ],
         blank=True,
     )
     is_active = models.BooleanField(
@@ -186,6 +191,16 @@ class Product(UUIDModel, TimeStampedModel):
     def get_absolute_url(self):
         return reverse("products:product_detail", kwargs={"slug": self.slug})
 
+    def get_image_urls(self):
+        image_urls = [
+            image.image.url
+            for variant in self.variants.all()
+            for image in variant.images.all()
+            if image.image and hasattr(image.image, "url")
+        ]
+        image_urls = list(dict.fromkeys(image_urls))
+        return image_urls or [get_default_image_url()]
+
 
 class ProductVariant(UUIDModel, TimeStampedModel):
     product = models.ForeignKey(
@@ -247,6 +262,11 @@ class ProductVariantImage(TimeStampedModel):
     image = models.ImageField(
         verbose_name=_("Image"),
         upload_to=product_variant_image_upload_to,
+        validators=[
+            FileSizeValidator(max_size=5, unit="MB"),
+            FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png"]),
+        ],
+        db_index=True,
     )
     alt_text = models.CharField(
         verbose_name=_("Alt text"),
@@ -285,8 +305,6 @@ class ProductVariantAttributeValue(TimeStampedModel):
         verbose_name=_("Attribute value"),
         on_delete=models.CASCADE,
     )
-
-    objects = ProductVariantAttributeValueManager()
 
     class Meta:
         verbose_name = _("Product variant attribute value")
