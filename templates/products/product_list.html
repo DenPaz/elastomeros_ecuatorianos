@@ -1,1 +1,111 @@
 {% extends "products/_base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load partials %}
+
+{% block title %}
+  {% trans "Products" %}
+{% endblock title %}
+{% block content %}
+  <div class="container py-4">
+    <div class="row">
+      <div class="col-lg-9 offset-lg-3">
+        <h1 class="fs-1 fw-bold">
+          {% trans "Products" %}
+        </h1>
+      </div>
+    </div>
+    <div class="row">
+      <aside class="col-lg-3">
+        <div id="product-filters" class="offcanvas-lg offcanvas-start">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title">
+              {% trans "Filters" %}
+            </h5>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    data-bs-target="#product-filters"
+                    aria-label="{% trans "Close" %}">
+            </button>
+          </div>
+          <div class="offcanvas-body">
+            <h3 class="h5">
+              {% trans "Categories" %}
+            </h3>
+            <div class="d-flex flex-column gap-2">
+              {% for category in categories %}
+                <div class="form-check">
+                  <input class="form-check-input"
+                         type="checkbox"
+                         value="{{ category.slug }}"
+                         id="category-{{ category.id }}" />
+                  <label class="form-check-label d-flex align-items-center"
+                         for="category-{{ category.id }}">
+                    <span class="text-nav fw-medium">
+                      {{ category.name }}
+                    </span>
+                    <span class="fs-xs text-body-secondary ms-auto">
+                      {{ category.products_count }}
+                    </span>
+                  </label>
+                </div>
+              {% empty %}
+                <p class="text-body-secondary">
+                  {% trans "No categories available." %}
+                </p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </aside>
+      <div class="col-lg-9">
+        {% partialdef products-list inline %}
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            {% for product in products %}
+              <div class="col">
+                <div class="card-hover position-relative bg-secondary rounded-1">
+                  <div class="swiper swiper-nav-onhover"
+                       data-swiper-options='{"loop": true, "navigation": {"prevEl": ".btn-prev", "nextEl": ".btn-next"}}'>
+                    <a href="{{ product.get_absolute_url }}" class="swiper-wrapper">
+                      <div class="swiper-slide p-2 p-xl-4">
+                        {% comment %} <img src="#" class="d-block mx-auto" alt="{{ product.name }}" /> {% endcomment %}
+                        {% for image_url in product.get_image_urls %}
+                          <img src="{{ image_url }}"
+                               class="d-block mx-auto"
+                               alt="{{ product.name }}" />
+                        {% endfor %}
+                      </div>
+                    </a>
+                  </div>
+                </div>
+                <div class="d-flex">
+                  <h3 class="h6">
+                    <a href="{{ product.get_absolute_url }}" class="text-nav fw-medium">
+                      {{ product.name }}
+                    </a>
+                  </h3>
+                </div>
+                <div class="d-flex align-items-center">
+                  <span class="text-nav">
+                    ${{ product.min_price }}
+                    {% if product.min_price != product.max_price %}
+                      - ${{ product.max_price }}
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endpartialdef %}
+      </div>
+    </div>
+  </div>
+  <button type="button"
+          class="d-lg-none btn btn-sm btn-primary w-100 fs-sm rounded-0 fixed-bottom"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#product-filters">
+    {% trans "Filters" %}
+  </button>
+{% endblock content %}
