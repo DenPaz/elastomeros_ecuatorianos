@@ -30,6 +30,7 @@ LANGUAGES = [
     ("es", _("Spanish")),
 ]
 SITE_ID = 1
+CART_SESSION_ID = "cart"
 SITE_NAME = "Elastómeros Ecuatorianos"
 SITE_DOMAIN = "elastomeros-ecuatorianos.ec"
 USE_I18N = True
@@ -186,6 +187,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "apps.users.context_processors.allauth_settings",
                 "apps.products.context_processors.product_categories",
+                "apps.cart.context_processors.cart",
             ],
         },
     },
