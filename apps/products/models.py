@@ -5,7 +5,6 @@ from django.core.validators import FileExtensionValidator
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.functions import Lower
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel
 from model_utils.models import UUIDModel
@@ -16,10 +15,11 @@ from apps.core.validators import FileSizeValidator
 from .managers import AttributeManager
 from .managers import AttributeValueManager
 from .managers import CategoryManager
+from .managers import ProductImageManager
 from .managers import ProductManager
-from .managers import ProductVariantImageManager
+from .managers import ProductVariantAttributeValueManager
 from .managers import ProductVariantManager
-from .utils import product_variant_image_upload_to
+from .utils import product_image_upload_to
 
 
 class Category(UUIDModel, TimeStampedModel):
@@ -62,8 +62,8 @@ class Category(UUIDModel, TimeStampedModel):
     def __str__(self):
         return f"{self.name}"
 
-    def get_absolute_url(self):
-        return reverse("products:product_list") + f"?category={self.slug}"
+    # TODO: Implement when views are ready
+    def get_absolute_url(self): ...
 
     def get_image_url(self):
         if self.image and hasattr(self.image, "url"):
@@ -188,14 +188,13 @@ class Product(UUIDModel, TimeStampedModel):
     def __str__(self):
         return f"{self.name}"
 
-    def get_absolute_url(self):
-        return reverse("products:product_detail", kwargs={"slug": self.slug})
+    # TODO: Implement when views are ready
+    def get_absolute_url(self): ...
 
     def get_image_urls(self):
         image_urls = [
             image.image.url
-            for variant in self.variants.all()
-            for image in variant.images.all()
+            for image in self.images.all()
             if image.image and hasattr(image.image, "url")
         ]
         image_urls = list(dict.fromkeys(image_urls))
@@ -252,48 +251,6 @@ class ProductVariant(UUIDModel, TimeStampedModel):
         return f"{self.product.name} ({self.sku})"
 
 
-class ProductVariantImage(TimeStampedModel):
-    product_variant = models.ForeignKey(
-        to=ProductVariant,
-        verbose_name=_("Product variant"),
-        related_name="images",
-        on_delete=models.CASCADE,
-    )
-    image = models.ImageField(
-        verbose_name=_("Image"),
-        upload_to=product_variant_image_upload_to,
-        validators=[
-            FileSizeValidator(max_size=5, unit="MB"),
-            FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png"]),
-        ],
-        db_index=True,
-    )
-    alt_text = models.CharField(
-        verbose_name=_("Alt text"),
-        max_length=255,
-        blank=True,
-    )
-    sort_order = models.PositiveIntegerField(
-        verbose_name=_("Sort order"),
-        default=0,
-    )
-    is_active = models.BooleanField(
-        verbose_name=_("Active"),
-        default=True,
-        db_index=True,
-    )
-
-    objects = ProductVariantImageManager()
-
-    class Meta:
-        verbose_name = _("Product variant image")
-        verbose_name_plural = _("Product variant images")
-        ordering = ["product_variant", "sort_order"]
-
-    def __str__(self):
-        return f"Image #{self.sort_order} for {self.product_variant}"
-
-
 class ProductVariantAttributeValue(TimeStampedModel):
     product_variant = models.ForeignKey(
         to=ProductVariant,
@@ -305,6 +262,8 @@ class ProductVariantAttributeValue(TimeStampedModel):
         verbose_name=_("Attribute value"),
         on_delete=models.CASCADE,
     )
+
+    objects = ProductVariantAttributeValueManager()
 
     class Meta:
         verbose_name = _("Product variant attribute value")
@@ -346,3 +305,77 @@ class ProductVariantAttributeValue(TimeStampedModel):
                     % {"attribute": self.attribute_value.attribute.name},
                 },
             )
+
+
+class ProductImage(TimeStampedModel):
+    product = models.ForeignKey(
+        to=Product,
+        verbose_name=_("Product"),
+        related_name="images",
+        on_delete=models.CASCADE,
+    )
+    product_variant = models.ForeignKey(
+        to=ProductVariant,
+        verbose_name=_("Product variant"),
+        related_name="images",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    image = models.ImageField(
+        verbose_name=_("Image"),
+        upload_to=product_image_upload_to,
+        validators=[
+            FileSizeValidator(max_size=5, unit="MB"),
+            FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png"]),
+        ],
+    )
+    alt_text = models.CharField(
+        verbose_name=_("Alt text"),
+        max_length=255,
+        blank=True,
+    )
+    sort_order = models.PositiveIntegerField(
+        verbose_name=_("Sort order"),
+        default=0,
+    )
+    is_active = models.BooleanField(
+        verbose_name=_("Active"),
+        default=True,
+        db_index=True,
+    )
+
+    objects = ProductImageManager()
+
+    class Meta:
+        verbose_name = _("Product image")
+        verbose_name_plural = _("Product images")
+        ordering = ["product", "sort_order"]
+
+    def __str__(self):
+        if self.product_variant:
+            return (
+                f"Image #{self.id} for {self.product.slug} ({self.product_variant.sku})"
+            )
+        return f"Image #{self.id} for {self.product.slug}"
+
+    def clean(self):
+        super().clean()
+        if self.product_variant and self.product_variant.product != self.product:
+            raise ValidationError(
+                {
+                    "product_variant": _(
+                        "The selected product variant does not belong to the "
+                        "selected product.",
+                    ),
+                },
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        if not self.alt_text:
+            if self.product_variant:
+                self.alt_text = f"{self.product.slug} ({self.product_variant.sku})"
+            else:
+                self.alt_text = self.product.slug
+        super().save(*args, **kwargs)
