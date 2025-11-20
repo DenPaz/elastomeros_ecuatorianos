@@ -22,7 +22,7 @@ class ProductListView(HtmxTemplateMixin, ListView):
             .get_queryset()
             .active()
             .with_category()
-            .with_active_variants()
+            .with_variants_and_images()
             .with_price_range()
             .order_by("name")
         )
@@ -45,7 +45,7 @@ class ProductListView(HtmxTemplateMixin, ListView):
         context["category"] = self.category
         context["categories"] = (
             Category.objects.active()
-            .with_active_products_count()
+            .with_products_count()
             .only("id", "name", "slug")
         )
         return context

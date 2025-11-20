@@ -85,6 +85,7 @@ THIRD_PARTY_APPS = [
     "nested_admin",
     "django_filters",
     "phonenumber_field",
+    "formtools",
 ]
 LOCAL_APPS = [
     "apps.core.config.CoreConfig",

@@ -30,7 +30,7 @@ class CategoryQuerySet(BaseQuerySet):
             ),
         )
 
-    def with_product_count(self):
+    def with_products_count(self):
         queryset = self._product_queryset().active()
         return self.annotate(
             product_count=Count(
