@@ -1,0 +1,127 @@
+{% load i18n %}
+{% load static %}
+{% load core_tags %}
+
+<header class="navbar navbar-expand-lg border-bottom shadow-sm sticky-top bg-light">
+  <div class="container justify-content-center justify-content-sm-between gap-3">
+    <a href="{% url 'home:index' %}"
+       class="navbar-brand flex-shrink-0 order-lg-1">
+      <img src="{% static 'images/logo-elastomeros-text.svg' %}"
+           class="h-35px"
+           alt="logo" />
+    </a>
+    <div class="nav align-items-center justify-content-center order-lg-3 gap-1">
+      <div class="form-check form-switch mode-switch p-2" data-bs-toggle="mode">
+        <input id="theme-mode" type="checkbox" class="form-check-input" />
+        <label class="form-check-label" for="theme-mode">
+          <i class="ai-sun fs-lg"></i>
+        </label>
+        <label class="form-check-label" for="theme-mode">
+          <i class="ai-moon fs-lg"></i>
+        </label>
+      </div>
+      <a href="#" class="nav-link fs-4 p-2">
+        <i class="ai-search"></i>
+      </a>
+      <a href="#" class="nav-link fs-4 p-2">
+        <i class="ai-cart"></i>
+        <span class="badge badge-cart bg-primary">
+          0
+        </span>
+      </a>
+      <div class="dropdown">
+        <button type="button" class="btn btn-link ms-4 p-0" data-bs-toggle="dropdown">
+          <img class="border rounded-circle h-45px"
+               src="{% if user.is_authenticated %}{{ user.profile.get_avatar_url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
+               alt="User avatar" />
+        </button>
+        <div class="dropdown-menu dropdown-menu-end my-1">
+          {% if user.is_authenticated %}
+            <p class="dropdown-header fs-xs fw-medium text-body-secondary text-uppercase pb-1">
+              {% trans "Account" %}
+            </p>
+            {% if user.is_staff %}
+              <a href="{% url 'admin:index' %}" class="dropdown-item">
+                <i class="ai-code-curly fs-lg opacity-70 me-2"></i>
+                {% trans "Admin panel" %}
+              </a>
+            {% endif %}
+            <a href="#" class="dropdown-item">
+              <i class="ai-user-check fs-lg opacity-70 me-2"></i>
+              {% trans "Overview" %}
+            </a>
+            <a href="#" class="dropdown-item">
+              <i class="ai-settings fs-lg opacity-70 me-2"></i>
+              {% trans "Settings" %}
+            </a>
+            <a href="#" class="dropdown-item">
+              <i class="ai-wallet fs-lg opacity-70 me-2"></i>
+              {% trans "Billing" %}
+            </a>
+            <div class="dropdown-divider">
+            </div>
+            <p class="dropdown-header fs-xs fw-medium text-body-secondary text-uppercase pb-1">
+              {% trans "Dashboard" %}
+            </p>
+            <a href="#" class="dropdown-item">
+              <i class="ai-cart fs-lg opacity-70 me-2"></i>
+              {% trans "Orders" %}
+            </a>
+            <a href="#" class="dropdown-item">
+              <i class="ai-heart fs-lg opacity-70 me-2"></i>
+              {% trans "Favorites" %}
+            </a>
+            <div class="dropdown-divider">
+            </div>
+            <form method="post" action="{% url 'account_logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="dropdown-item">
+                <i class="ai-logout fs-lg opacity-70 me-2"></i>
+                {% trans "Sign out" %}
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'account_login' %}" class="dropdown-item">
+              <i class="ai-login fs-lg opacity-70 me-2"></i>
+              {% trans "Sign in" %}
+            </a>
+            <a href="{% url 'account_signup' %}" class="dropdown-item">
+              <i class="ai-user-plus fs-lg opacity-70 me-2"></i>
+              {% trans "Register" %}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      <button type="button"
+              class="navbar-toggler p-4"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbar-nav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    <nav id="navbar-nav" class="collapse navbar-collapse order-lg-2">
+      <ul class="navbar-nav navbar-nav-scroll flex-lg-wrap mh-400px">
+        <li class="nav-item {% active_class 'home:index' %}">
+          <a href="{% url 'home:index' %}" class="nav-link">
+            {% trans "Home" %}
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a href="#"
+             class="nav-link dropdown-toggle"
+             data-bs-toggle="dropdown"
+             data-bs-auto-close="outside">
+            {% trans "Catalog" %}
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a href="#" class="dropdown-item">
+                {% trans "All products" %}
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
