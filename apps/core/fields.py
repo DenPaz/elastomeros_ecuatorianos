@@ -16,7 +16,7 @@ class OrderField(models.PositiveIntegerField):
                 }
                 qs = qs.filter(**filter_kwargs)
             last_item = qs.order_by("-" + self.attname).first()
-            value = last_item.order + 1 if last_item else 0
+            value = getattr(last_item, self.attname) + 1 if last_item else 0
             setattr(model_instance, self.attname, value)
         return value
 
