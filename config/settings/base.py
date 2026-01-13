@@ -84,6 +84,7 @@ THIRD_PARTY_APPS = [
     "nested_admin",
     "django_filters",
     "phonenumber_field",
+    "django_jsonform",
     "formtools",
 ]
 LOCAL_APPS = [
