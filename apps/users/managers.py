@@ -3,7 +3,15 @@ from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import models
 
 
-class UserManager(DjangoUserManager):
+class UserQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(is_active=True)
+
+    def with_profile(self):
+        return self.select_related("profile")
+
+
+class UserManager(DjangoUserManager.from_queryset(UserQuerySet)):
     def _create_user(self, email, password, **extra_fields):
         if not email:
             msg = "The given email must be set"
@@ -37,5 +45,4 @@ class UserProfileQuerySet(models.QuerySet):
 
 
 class UserProfileManager(models.Manager.from_queryset(UserProfileQuerySet)):
-    def get_queryset(self):
-        return super().get_queryset().with_user()
+    pass

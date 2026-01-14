@@ -20,6 +20,10 @@ class UserProfileInline(admin.StackedInline):
     min_num = 1
     max_num = 1
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.with_user()
+
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
@@ -100,3 +104,4 @@ class UserAdmin(DjangoUserAdmin):
         "date_joined",
     ]
     list_per_page = 20
+    show_full_result_count = False
