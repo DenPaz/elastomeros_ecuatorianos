@@ -2,11 +2,10 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import models
 
+from apps.core.managers import ActiveQuerySet
 
-class UserQuerySet(models.QuerySet):
-    def active(self):
-        return self.filter(is_active=True)
 
+class UserQuerySet(ActiveQuerySet):
     def with_profile(self):
         return self.select_related("profile")
 
