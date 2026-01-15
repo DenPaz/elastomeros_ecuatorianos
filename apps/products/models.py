@@ -117,7 +117,7 @@ class Product(UUIDModel, TimeStampedModel):
             models.UniqueConstraint(
                 Lower("name"),
                 "category",
-                name="unique_product_name_per_category_case_insensitive",
+                name="unique_name_per_category_case_insensitive",
             ),
         ]
         ordering = ["name"]
