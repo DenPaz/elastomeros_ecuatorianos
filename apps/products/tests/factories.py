@@ -15,7 +15,7 @@ from apps.products.models import ProductVariantImage
 
 
 class CategoryFactory(DjangoModelFactory):
-    name = Sequence(lambda n: f"Category {n}")
+    name = Sequence(lambda n: f"Category {n + 1}")
     slug = LazyAttribute(lambda obj: slugify(obj.name))
     description = Faker("paragraph")
     is_active = True
@@ -25,7 +25,11 @@ class CategoryFactory(DjangoModelFactory):
         skip_postgeneration_save = True
 
     class Params:
-        with_image = Trait(image=ImageField(filename="category_image.jpg"))
+        with_image = Trait(
+            image=ImageField(
+                filename=Sequence(lambda n: f"category_image_{n + 1}.jpg"),
+            ),
+        )
 
     @post_generation
     def products(self, create, extracted, **kwargs):
@@ -38,7 +42,7 @@ class CategoryFactory(DjangoModelFactory):
 
 class ProductFactory(DjangoModelFactory):
     category = SubFactory(CategoryFactory)
-    name = Sequence(lambda n: f"Product {n}")
+    name = Sequence(lambda n: f"Product {n + 1}")
     slug = LazyAttribute(lambda obj: slugify(obj.name))
     short_description = Faker("sentence")
     full_description = Faker("paragraph")
@@ -62,7 +66,7 @@ class ProductVariantFactory(DjangoModelFactory):
     sku = Sequence(lambda n: f"SKU-{n:05d}")
     price = Faker("pydecimal", left_digits=4, right_digits=2, positive=True)
     stock_quantity = Faker("pyint", min_value=0, max_value=100)
-    attributes = Sequence(lambda n: {"attribute": f"value_{n}"})
+    attributes = Sequence(lambda n: {"attribute": f"value_{n + 1}"})
     sort_order = None
     is_active = True
 
@@ -81,7 +85,7 @@ class ProductVariantFactory(DjangoModelFactory):
 
 class ProductVariantImageFactory(DjangoModelFactory):
     variant = SubFactory(ProductVariantFactory)
-    image = ImageField(filename="variant_image.jpg")
+    image = ImageField(filename=Sequence(lambda n: f"variant_image_{n + 1}.jpg"))
     alt_text = Faker("sentence")
     sort_order = None
     is_active = True
