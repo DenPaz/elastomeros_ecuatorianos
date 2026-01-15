@@ -68,6 +68,7 @@ class ProductVariantFactory(DjangoModelFactory):
 
     class Meta:
         model = ProductVariant
+        skip_postgeneration_save = True
 
     @post_generation
     def images(self, create, extracted, **kwargs):
