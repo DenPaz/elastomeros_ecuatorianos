@@ -8,4 +8,5 @@ uv run manage.py makemigrations
 uv run manage.py migrate
 uv run manage.py update_site_domain_and_name
 uv run manage.py create_test_users
+uv run manage.py seed_sample_products --clear
 uv run manage.py runserver
