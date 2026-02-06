@@ -1,0 +1,27 @@
+{% extends "account/_base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% trans "Verify you email" %}
+{% endblock title %}
+{% block content_header %}
+  <div class="vstack align-items-center gap-2 mb-6">
+    <h1>
+      {% trans "Verify your email" %}
+    </h1>
+    <p>
+      {% blocktrans trimmed %}
+        We have sent an email to you for verification. Follow the link provided to finalize the signup process. If you do not see the verification email in your main inbox, check your spam folder. Please contact us if you do not receive the verification email within a few minutes
+      {% endblocktrans %}
+    </p>
+  </div>
+{% endblock content_header %}
+{% block content_body %}
+  {% url 'account_login' as login_url %}
+  <div class="vstack gap-6">
+    <a href="{{ login_url }}" class="btn btn-lg btn-secondary">
+      {% trans "Return to login" %}
+    </a>
+  </div>
+{% endblock content_body %}

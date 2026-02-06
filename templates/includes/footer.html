@@ -1,0 +1,31 @@
+{% load i18n %}
+
+<footer class="footer bg-dark border-top shadow-sm py-5" data-bs-theme="dark">
+  <div class="container vstack flex-md-row align-items-center justify-content-between gap-3">
+    <div class="text-body-secondary order-sm-3">
+      {% trans "Santo Domingo - Ecuador" %}
+    </div>
+    <div class="d-flex gap-3 order-sm-2">
+      <a href="https://wa.me/593992397041"
+         class="btn btn-sm btn-icon btn-secondary btn-whatsapp rounded-circle"
+         target="_blank"
+         rel="noopener">
+        <i class="ai-whatsapp"></i>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=100093974207249"
+         class="btn btn-sm btn-icon btn-secondary btn-facebook rounded-circle"
+         target="_blank"
+         rel="noopener">
+        <i class="ai-facebook"></i>
+      </a>
+    </div>
+    <div class="nav order-sm-1">
+      <a href="https://github.com/DenPaz"
+         class="nav-link fw-normal p-2"
+         target="_blank"
+         rel="noopener">
+        {% now "Y" %} © Dennis Paz
+      </a>
+    </div>
+  </div>
+</footer>

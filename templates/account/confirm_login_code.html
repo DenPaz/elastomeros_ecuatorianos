@@ -1,0 +1,91 @@
+{% extends "account/_base.html" %}
+
+{% load i18n %}
+{% load account %}
+{% load widget_tweaks %}
+
+{% block title %}
+  {% trans "Enter sign-in code" %}
+{% endblock title %}
+{% block content_header %}
+  <div class="vstack align-items-center gap-2 mb-6">
+    <h1>
+      {% trans "Enter sign-in code" %}
+    </h1>
+    <p>
+      {% blocktrans trimmed %}
+        We've sent a code to <a href="mailto:{{ email }}">{{ email }}</a>. The code expires shortly, so please enter it soon.
+      {% endblocktrans %}
+    </p>
+  </div>
+{% endblock content_header %}
+{% block content_body %}
+  {{ block.super }}
+  {% url 'account_confirm_login_code' as confirm_login_code_url %}
+  {% url 'account_logout' as logout_url %}
+  {% url 'account_login' as login_url %}
+  {% trans "Code" as code_label %}
+  {% with WIDGET_ERROR_CLASS="border-danger" %}
+    <form method="post"
+          class="vstack gap-6"
+          action="{{ confirm_login_code_url }}"
+          novalidate>
+      {% csrf_token %}
+      {{ redirect_field }}
+      <div class="vstack gap-1">
+        {% render_field verify_form.code class="form-control form-control-lg" placeholder=code_label autocomplete="one-time-code" inputmode="numeric" autofocus="autofocus" %}
+        {% if verify_form.code.errors %}
+          <div class="invalid-feedback d-block">
+            <ul class="list-unstyled mb-0">
+              {% for error in verify_form.code.errors %}
+                <li>
+                  {{ error }}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+      <button type="submit" class="btn btn-lg btn-primary">
+        {% trans "Confirm" %}
+      </button>
+      {% if can_resend %}
+        <button type="submit" form="resend" class="btn btn-lg btn-outline-warning">
+          {% trans "Request new code" %}
+        </button>
+      {% endif %}
+      {% if cancel_url %}
+        <a href="{{ cancel_url }}" class="btn btn-lg btn-outline-secondary">
+          {% trans "Cancel" %}
+        </a>
+      {% else %}
+        <button type="submit"
+                form="logout-from-stage"
+                class="btn btn-lg btn-outline-secondary">
+          {% trans "Cancel" %}
+        </button>
+      {% endif %}
+    </form>
+  {% endwith %}
+  <form id="resend"
+        method="post"
+        class="d-none"
+        action="{{ confirm_login_code_url }}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="resend" />
+    {% if redirect_field_value %}
+      <input type="hidden"
+             name="{{ redirect_field_name }}"
+             value="{{ redirect_field_value }}" />
+    {% endif %}
+  </form>
+  {% if not cancel_url %}
+    <form id="logout-from-stage"
+          method="post"
+          class="d-none"
+          action="{{ logout_url }}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ login_url }}" />
+    </form>
+  {% endif %}
+{% endblock content_body %}

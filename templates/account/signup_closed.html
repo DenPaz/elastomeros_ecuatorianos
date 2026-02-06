@@ -1,0 +1,27 @@
+{% extends "account/_base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% trans "Sign up closed" %}
+{% endblock title %}
+{% block content_header %}
+  <div class="vstack align-items-center gap-2 mb-6">
+    <h1>
+      {% trans "Sign up closed" %}
+    </h1>
+    <p>
+      {% blocktrans trimmed %}
+        We are sorry, but the sign up process is currently closed. Please check back later or contact support for more information.
+      {% endblocktrans %}
+    </p>
+  </div>
+{% endblock content_header %}
+{% block content_body %}
+  {% url 'account_login' as login_url %}
+  <div class="vstack gap-6">
+    <a href="{{ login_url }}" class="btn btn-lg btn-secondary">
+      {% trans "Return to login" %}
+    </a>
+  </div>
+{% endblock content_body %}

@@ -1,0 +1,188 @@
+{% load i18n %}
+
+{% if messages %}
+  <div id="toast-messages"
+       class="toast-container position-fixed top-0 end-0 p-4"
+       aria-live="polite"
+       aria-atomic="true"
+       hx-swap-oob="true">
+    {% for message in messages %}
+      {% with tag=message.tags|default:"info" %}
+        <div class="toast fade
+                    {% if 'success' in tag %}
+                      text-bg-success
+                    {% elif 'error' in tag or 'danger' in tag %}
+                      text-bg-danger
+                    {% elif 'warning' in tag %}
+                      text-bg-warning
+                    {% elif 'info' in tag %}
+                      text-bg-info
+                    {% elif 'debug' in tag %}
+                      text-bg-secondary
+                    {% else %}
+                      bg-light text-dark
+                    {% endif %}"
+             role="alert"
+             aria-live="assertive"
+             aria-atomic="true"
+             data-bs-autohide="false"
+             data-bs-delay="2000">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="toast-body">
+              {{ message|safe }}
+            </div>
+            <button type="button"
+                    class="btn-close me-4
+                           {% if 'success' in tag or 'error' in tag or 'danger' in tag or 'debug' in tag %}
+                             btn-close-white
+                           {% endif %}"
+                    data-bs-dismiss="toast">
+            </button>
+            <div class="toast-timer">
+              <div class="timer-bar">
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endwith %}
+    {% endfor %}
+  </div>
+{% endif %}
+<style>
+  #toast-messages .toast {
+    position: relative;
+    overflow: hidden;
+  }
+
+  #toast-messages .toast-timer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.3rem;
+    background: transparent;
+  }
+
+  #toast-messages .timer-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    transform-origin: left center;
+    animation: toast-progress var(--toast-delay, 2500ms) linear forwards;
+    opacity: .55;
+  }
+
+  #toast-messages .toast.text-bg-success .timer-bar,
+  #toast-messages .toast.text-bg-danger .timer-bar,
+  #toast-messages .toast.text-bg-secondary .timer-bar,
+  #toast-messages .toast.text-bg-info .timer-bar {
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  #toast-messages .toast.text-bg-warning .timer-bar,
+  #toast-messages .toast.bg-light .timer-bar {
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  @keyframes toast-progress {
+    from {
+      transform: scaleX(1);
+    }
+
+    to {
+      transform: scaleX(0);
+    }
+  }
+</style>
+<script>
+  (function() {
+    const state = new WeakMap();
+
+    function startCountdown(el, ms) {
+      const s = state.get(el) || {};
+      clearTimeout(s.timeoutId);
+
+      s.remaining = ms;
+      s.startedAt = Date.now();
+
+      const bar = el.querySelector('.timer-bar');
+      if (bar) bar.style.animationPlayState = 'running';
+
+      s.timeoutId = setTimeout(() => {
+        const inst = bootstrap.Toast.getOrCreateInstance(el);
+        inst.hide();
+      }, s.remaining);
+
+      state.set(el, s);
+    }
+
+    function pauseCountdown(el) {
+      const s = state.get(el);
+      if (!s) return;
+
+      const bar = el.querySelector('.timer-bar');
+      if (bar) bar.style.animationPlayState = 'paused';
+
+      const elapsed = Date.now() - (s.startedAt || Date.now());
+      s.remaining = Math.max(0, (s.remaining || 0) - elapsed);
+      clearTimeout(s.timeoutId);
+
+      state.set(el, s);
+    }
+
+    function initToast(el) {
+      const delay = parseInt(el.getAttribute('data-bs-delay') || '2000', 10);
+      el.style.setProperty('--toast-delay', delay + 'ms');
+
+      const inst = bootstrap.Toast.getOrCreateInstance(el);
+      inst.show();
+
+      startCountdown(el, delay);
+
+      el.addEventListener('mouseenter', () => pauseCountdown(el));
+      el.addEventListener('mouseleave', () => {
+        const s = state.get(el);
+        startCountdown(el, (s && s.remaining) || delay);
+      });
+
+      el.addEventListener('hidden.bs.toast', () => {
+        const s = state.get(el);
+        if (s) clearTimeout(s.timeoutId);
+        state.delete(el);
+      });
+    }
+
+    function showToasts(ctx) {
+      (ctx || document).querySelectorAll('#toast-messages .toast').forEach(function(el) {
+        const delay = parseInt(el.getAttribute('data-bs-delay') || '2000', 10);
+        el.style.setProperty('--toast-delay', delay + 'ms');
+
+        if (!state.get(el)) {
+          initToast(el);
+        } else {
+          const s = state.get(el);
+          const inst = bootstrap.Toast.getOrCreateInstance(el);
+          inst.show();
+          const bar = el.querySelector('.timer-bar');
+          if (bar && bar.style.animationPlayState === 'paused') {
+            pauseCountdown(el);
+          } else {
+            startCountdown(el, (s && s.remaining) || delay);
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      showToasts(document);
+    });
+    document.body.addEventListener('htmx:afterSwap', function() {
+      showToasts(document);
+    });
+    document.body.addEventListener('htmx:oobAfterSwap', function() {
+      showToasts(document);
+    });
+  })();
+</script>

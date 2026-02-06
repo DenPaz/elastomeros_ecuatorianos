@@ -1,0 +1,71 @@
+{% load i18n %}
+{% load static %}
+{% load django_htmx %}
+
+<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}" data-bs-theme="light">
+  <head>
+    <title>
+      {% block title %}
+        {{ page_title|default:_("Welcome!") }}
+      {% endblock title %}
+      | Elastómeros Ecuatorianos
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Elastómeros Ecuatorianos Store" />
+    <meta name="author" content="Dennis Paz" />
+    <link href="{% static 'images/logo-elastomeros-icon.svg' %}" rel="icon" />
+    {% block css %}
+      {% include "includes/styles.html" %}
+    {% endblock css %}
+    {% block extra_css %}
+    {% endblock extra_css %}
+    {% htmx_script %}
+  </head>
+  <body {% block body_attributes %}
+        {% endblock body_attributes %}
+        hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+    {% block body %}
+      <main class="page-wrapper">
+        {% block main %}
+          {% block header %}
+            {% include "includes/header.html" %}
+          {% endblock header %}
+          {% block content %}
+          {% endblock content %}
+        {% endblock main %}
+      </main>
+      {% block footer %}
+        {% include "includes/footer.html" %}
+      {% endblock footer %}
+      <a href="#top" class="btn-scroll-top" data-scroll>
+        <svg viewBox="0 0 40 40"
+             fill="currentColor"
+             xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20"
+                  cy="20"
+                  r="19"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-miterlimit="10" />
+        </svg>
+        <i class="ai-arrow-up"></i>
+      </a>
+    {% endblock body %}
+    {% block offcanvas %}
+    {% endblock offcanvas %}
+    {% block modals %}
+    {% endblock modals %}
+    {% block js %}
+      {% include "includes/scripts.html" %}
+    {% endblock js %}
+    {% block extra_js %}
+    {% endblock extra_js %}
+    {% block messages %}
+      {% include "includes/messages.html" %}
+    {% endblock messages %}
+  </body>
+</html>
