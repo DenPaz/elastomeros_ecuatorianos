@@ -9,24 +9,15 @@ class Command(BaseCommand):
     help = "Create test users for development and testing purposes."
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--count",
-            type=int,
-            default=50,
-            help="Number of test users to create (default: 50)",
-        )
-        parser.add_argument(
-            "--cleanup",
-            action="store_true",
-            help="Delete existing test users before creating new ones",
-        )
+        parser.add_argument("--count", type=int, default=50)
+        parser.add_argument("--clean", action="store_true")
 
     @transaction.atomic
     def handle(self, *args, **options):
         count = options["count"]
-        cleanup = options["cleanup"]
+        clean = options["clean"]
 
-        if cleanup:
+        if clean:
             User.objects.filter(is_superuser=False).delete()
             self.stdout.write(self.style.SUCCESS("Deleted existing test users."))
 
