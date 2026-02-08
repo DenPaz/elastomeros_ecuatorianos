@@ -260,7 +260,7 @@ class ProductImage(UUIDModel, TimeStampedModel):
         verbose_name = _("Product image")
         verbose_name_plural = _("Product images")
         indexes = [
-            models.Index(fields=["is_active"]),
+            models.Index(fields=["product", "is_active"]),
         ]
         ordering = ["product", "sort_order"]
 
