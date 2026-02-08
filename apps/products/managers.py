@@ -37,6 +37,7 @@ class CategoryQuerySet(ActiveQuerySet):
         return self.annotate(
             products_count=Count(
                 "products",
+                distinct=True,
             ),
         )
 
@@ -45,6 +46,7 @@ class CategoryQuerySet(ActiveQuerySet):
             active_products_count=Count(
                 "products",
                 filter=Q(products__is_active=True),
+                distinct=True,
             ),
         )
 
@@ -59,7 +61,7 @@ class ProductQuerySet(ActiveQuerySet):
 
     def with_variants(self):
         ProductVariant = apps.get_model("products", "ProductVariant")
-        queryset = ProductVariant.objects.order_by("sort_order")
+        queryset = ProductVariant.objects.order_by("sort_order", "sku")
         return self.prefetch_related(
             Prefetch(
                 "variants",
@@ -70,7 +72,7 @@ class ProductQuerySet(ActiveQuerySet):
 
     def with_active_variants(self):
         ProductVariant = apps.get_model("products", "ProductVariant")
-        queryset = ProductVariant.objects.active().order_by("sort_order")
+        queryset = ProductVariant.objects.active().order_by("sort_order", "sku")
         return self.prefetch_related(
             Prefetch(
                 "variants",
@@ -81,7 +83,7 @@ class ProductQuerySet(ActiveQuerySet):
 
     def with_images(self):
         ProductImage = apps.get_model("products", "ProductImage")
-        queryset = ProductImage.objects.order_by("sort_order")
+        queryset = ProductImage.objects.order_by("sort_order", "id")
         return self.prefetch_related(
             Prefetch(
                 "images",
@@ -92,7 +94,7 @@ class ProductQuerySet(ActiveQuerySet):
 
     def with_active_images(self):
         ProductImage = apps.get_model("products", "ProductImage")
-        queryset = ProductImage.objects.active().order_by("sort_order")
+        queryset = ProductImage.objects.active().order_by("sort_order", "id")
         return self.prefetch_related(
             Prefetch(
                 "images",
