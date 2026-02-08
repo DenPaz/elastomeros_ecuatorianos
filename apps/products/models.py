@@ -134,6 +134,7 @@ class AttributesSchema(UUIDModel, TimeStampedModel):
     )
     schema = models.JSONField(
         verbose_name=_("Schema"),
+        default=dict,
     )
 
     objects = AttributesSchemaManager()
