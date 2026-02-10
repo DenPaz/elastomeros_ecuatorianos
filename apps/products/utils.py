@@ -1,22 +1,8 @@
 from django.apps import apps
 from django.core.cache import cache
 
-ATTR_SCHEMA_CACHE_KEY = "products:attributes_schema:oneof:v1"
-
-NO_ATTRIBUTES_SCHEMA = {
-    "type": "object",
-    "title": "No attributes",
-    "required": ["type"],
-    "additionalProperties": False,
-    "properties": {
-        "type": {
-            "type": "string",
-            "const": "none",
-            "widget": "hidden",
-            "readonly": True,
-        },
-    },
-}
+from .constants import ATTRIBUTES_SCHEMA_CACHE_KEY
+from .constants import NO_ATTRIBUTES_SCHEMA
 
 
 def get_default_attributes_schema():
@@ -31,7 +17,7 @@ def build_attributes_schema():
 
 def get_attributes_schema(instance=None):
     return cache.get_or_set(
-        ATTR_SCHEMA_CACHE_KEY,
+        ATTRIBUTES_SCHEMA_CACHE_KEY,
         build_attributes_schema,
         timeout=None,
     )
