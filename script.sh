@@ -4,7 +4,7 @@ uv run manage.py reset_db --noinput
 uv run manage.py clear_cache
 uv run manage.py clean_pyc
 find . -name '__pycache__' -type d -exec rm -r {} +
-rm -rf media/*
+find media -mindepth 1 -maxdepth 1 ! -name 'Around_v1.0' -exec rm -rf {} +
 uv run manage.py makemigrations
 uv run manage.py migrate
 uv run manage.py update_site_domain_and_name
