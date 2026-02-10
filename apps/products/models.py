@@ -133,8 +133,8 @@ class Product(UUIDModel, TimeStampedModel):
         if min_price is None or max_price is None:
             return ""
         if min_price == max_price:
-            return f"{min_price:.2f}"
-        return f"{min_price:.2f} - {max_price:.2f}"
+            return f"${min_price:.2f}"
+        return f"${min_price:.2f} - ${max_price:.2f}"
 
 
 class AttributesSchema(UUIDModel, TimeStampedModel):
