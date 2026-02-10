@@ -352,15 +352,15 @@ wheels = [
 
 [[package]]
 name = "django-allauth"
-version = "65.14.0"
+version = "65.14.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/23/9b/061a6ac65c602eb721b13fbf9c665b20fb900f113a03ec8521b5fcf16b83/django_allauth-65.14.0.tar.gz", hash = "sha256:5529227aba2b1377d900e9274a3f24496c645e65400fbae3cad5789944bc4d0b", size = 1991909, upload-time = "2026-01-17T18:43:12.928Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fb/02/549b6f41ba3e55d4e2cf8e181cdf57b50035a3c0bdddb710a7df0b24efb0/django_allauth-65.14.1.tar.gz", hash = "sha256:2467656d0adc835607e407847054979ab5a943778f6eb8980ed2a29eee6c5790", size = 1993088, upload-time = "2026-02-07T22:36:52.279Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/c8/2f959ff8466913d95ba72eb4a29bd7998d28a559786033a97b5bbdda2b81/django_allauth-65.14.0-py3-none-any.whl", hash = "sha256:448f5f7877f95fcbe1657256510fe7822d7871f202521a29e23ef937f3325a97", size = 1793052, upload-time = "2026-01-17T18:43:08.954Z" },
+    { url = "https://files.pythonhosted.org/packages/28/80/05e2b3fffb80260af2dbb179d186929d7531bc9331974ba774d1d8eb3e38/django_allauth-65.14.1-py3-none-any.whl", hash = "sha256:204d8a07f217c41769a62aa4c7ae7afeb2886c841bebda6964e613e5be72e8b3", size = 1793120, upload-time = "2026-02-07T22:37:03.486Z" },
 ]
 
 [package.optional-dependencies]
@@ -750,7 +750,7 @@ requires-dist = [
     { name = "celery", specifier = "==5.6.2" },
     { name = "crispy-bootstrap5", specifier = "==2025.6" },
     { name = "django", specifier = "==5.2.11" },
-    { name = "django-allauth", extras = ["mfa"], specifier = "==65.14.0" },
+    { name = "django-allauth", extras = ["mfa"], specifier = "==65.14.1" },
     { name = "django-anymail", extras = ["amazon-ses"], specifier = "==14.0" },
     { name = "django-braces", specifier = "==1.17.0" },
     { name = "django-celery-beat", specifier = "==2.8.1" },
@@ -774,7 +774,7 @@ requires-dist = [
     { name = "pillow", specifier = "==12.1.0" },
     { name = "psycopg", extras = ["c"], specifier = "==3.3.2" },
     { name = "python-slugify", specifier = "==8.0.4" },
-    { name = "redis", specifier = "==7.1.0" },
+    { name = "redis", specifier = "==7.1.1" },
     { name = "whitenoise", specifier = "==6.11.0" },
 ]
 
@@ -1334,11 +1334,11 @@ wheels = [
 
 [[package]]
 name = "redis"
-version = "7.1.0"
+version = "7.1.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/43/c8/983d5c6579a411d8a99bc5823cc5712768859b5ce2c8afe1a65b37832c81/redis-7.1.0.tar.gz", hash = "sha256:b1cc3cfa5a2cb9c2ab3ba700864fb0ad75617b41f01352ce5779dabf6d5f9c3c", size = 4796669, upload-time = "2025-11-19T15:54:39.961Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f7/80/2971931d27651affa88a44c0ad7b8c4a19dc29c998abb20b23868d319b59/redis-7.1.1.tar.gz", hash = "sha256:a2814b2bda15b39dad11391cc48edac4697214a8a5a4bd10abe936ab4892eb43", size = 4800064, upload-time = "2026-02-09T18:39:40.292Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/89/f0/8956f8a86b20d7bb9d6ac0187cf4cd54d8065bc9a1a09eb8011d4d326596/redis-7.1.0-py3-none-any.whl", hash = "sha256:23c52b208f92b56103e17c5d06bdc1a6c2c0b3106583985a76a18f83b265de2b", size = 354159, upload-time = "2025-11-19T15:54:38.064Z" },
+    { url = "https://files.pythonhosted.org/packages/29/55/1de1d812ba1481fa4b37fb03b4eec0fcb71b6a0d44c04ea3482eb017600f/redis-7.1.1-py3-none-any.whl", hash = "sha256:f77817f16071c2950492c67d40b771fa493eb3fccc630a424a10976dbb794b7a", size = 356057, upload-time = "2026-02-09T18:39:38.602Z" },
 ]
 
 [[package]]
