@@ -81,6 +81,44 @@ class Category(UUIDModel, TimeStampedModel):
         return get_default_image_url()
 
 
+class AttributesSchema(UUIDModel, TimeStampedModel):
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=255,
+    )
+    schema = models.JSONField(
+        verbose_name=_("Schema"),
+        default=dict,
+    )
+
+    objects = AttributesSchemaManager()
+
+    class Meta:
+        verbose_name = _("Attributes schema")
+        verbose_name_plural = _("Attributes schemas")
+        constraints = [
+            models.UniqueConstraint(
+                Lower("name"),
+                name="unique_attributes_schema_name_case_insensitive",
+            ),
+        ]
+        ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.name}"
+
+    @property
+    def attributes(self):
+        schema = self.schema or {}
+        properties = schema.get("properties", {})
+        attrs = [
+            value.get("title", key)
+            for key, value in properties.items()
+            if key != "type"
+        ]
+        return sorted(attrs, key=str.casefold)
+
+
 class Product(UUIDModel, TimeStampedModel):
     category = models.ForeignKey(
         to=Category,
@@ -142,44 +180,6 @@ class Product(UUIDModel, TimeStampedModel):
         if min_price == max_price:
             return f"${min_price:.2f}"
         return f"${min_price:.2f} - ${max_price:.2f}"
-
-
-class AttributesSchema(UUIDModel, TimeStampedModel):
-    name = models.CharField(
-        verbose_name=_("Name"),
-        max_length=255,
-    )
-    schema = models.JSONField(
-        verbose_name=_("Schema"),
-        default=dict,
-    )
-
-    objects = AttributesSchemaManager()
-
-    class Meta:
-        verbose_name = _("Attributes schema")
-        verbose_name_plural = _("Attributes schemas")
-        constraints = [
-            models.UniqueConstraint(
-                Lower("name"),
-                name="unique_attributes_schema_name_case_insensitive",
-            ),
-        ]
-        ordering = ["name"]
-
-    def __str__(self):
-        return f"{self.name}"
-
-    @property
-    def attributes(self):
-        schema = self.schema or {}
-        properties = schema.get("properties", {})
-        attrs = [
-            value.get("title", key)
-            for key, value in properties.items()
-            if key != "type"
-        ]
-        return sorted(attrs, key=str.casefold)
 
 
 class ProductVariant(UUIDModel, TimeStampedModel):

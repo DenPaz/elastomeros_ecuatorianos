@@ -55,6 +55,14 @@ class CategoryManager(models.Manager.from_queryset(CategoryQuerySet)):
     pass
 
 
+class AttributesSchemaQuerySet(models.QuerySet):
+    pass
+
+
+class AttributesSchemaManager(models.Manager.from_queryset(AttributesSchemaQuerySet)):
+    pass
+
+
 class ProductQuerySet(ActiveQuerySet):
     def with_category(self):
         return self.select_related("category")
@@ -83,7 +91,7 @@ class ProductQuerySet(ActiveQuerySet):
 
     def with_images(self):
         ProductImage = apps.get_model("products", "ProductImage")
-        queryset = ProductImage.objects.order_by("sort_order", "id")
+        queryset = ProductImage.objects.order_by("sort_order")
         return self.prefetch_related(
             Prefetch(
                 "images",
@@ -94,7 +102,7 @@ class ProductQuerySet(ActiveQuerySet):
 
     def with_active_images(self):
         ProductImage = apps.get_model("products", "ProductImage")
-        queryset = ProductImage.objects.active().order_by("sort_order", "id")
+        queryset = ProductImage.objects.active().order_by("sort_order")
         return self.prefetch_related(
             Prefetch(
                 "images",
@@ -125,14 +133,6 @@ class ProductQuerySet(ActiveQuerySet):
 
 
 class ProductManager(models.Manager.from_queryset(ProductQuerySet)):
-    pass
-
-
-class AttributesSchemaQuerySet(models.QuerySet):
-    pass
-
-
-class AttributesSchemaManager(models.Manager.from_queryset(AttributesSchemaQuerySet)):
     pass
 
 

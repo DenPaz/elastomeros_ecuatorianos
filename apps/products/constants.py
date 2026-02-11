@@ -3,7 +3,6 @@ NO_ATTRIBUTES_SCHEMA = {
     "type": "object",
     "title": "No attributes",
     "required": ["type"],
-    "additionalProperties": False,
     "properties": {
         "type": {
             "type": "string",
@@ -12,5 +11,6 @@ NO_ATTRIBUTES_SCHEMA = {
             "readonly": True,
         },
     },
+    "additionalProperties": False,
 }
-PRODUCT_CATEGORIES_CACHE_KEY = "products:categories:v1"
+CATEGORIES_CACHE_KEY = "products:categories:v1"
