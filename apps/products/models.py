@@ -5,6 +5,7 @@ from django.core.validators import FileExtensionValidator
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.functions import Lower
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_jsonform.models.fields import JSONField
 from model_utils.models import TimeStampedModel
@@ -71,6 +72,9 @@ class Category(UUIDModel, TimeStampedModel):
     def __str__(self):
         return f"{self.name}"
 
+    def get_absolute_url(self):
+        return reverse("products:product_list") + f"?category={self.slug}"
+
     def get_image_url(self):
         if self.image and hasattr(self.image, "url"):
             return self.image.url
@@ -125,6 +129,9 @@ class Product(UUIDModel, TimeStampedModel):
 
     def __str__(self):
         return f"{self.name}"
+
+    def get_absolute_url(self):
+        return reverse("products:product_detail", kwargs={"slug": self.slug})
 
     @property
     def price_range(self):
