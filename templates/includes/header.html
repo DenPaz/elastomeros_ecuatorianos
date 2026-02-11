@@ -106,20 +106,10 @@
             {% trans "Home" %}
           </a>
         </li>
-        <li class="nav-item dropdown">
-          <a href="#"
-             class="nav-link dropdown-toggle"
-             data-bs-toggle="dropdown"
-             data-bs-auto-close="outside">
-            {% trans "Catalog" %}
+        <li class="nav-item {% active_class 'products:product_list' %}">
+          <a href="{% url 'products:product_list' %}" class="nav-link">
+            {% trans "Products" %}
           </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a href="#" class="dropdown-item">
-                {% trans "All products" %}
-              </a>
-            </li>
-          </ul>
         </li>
       </ul>
     </nav>
