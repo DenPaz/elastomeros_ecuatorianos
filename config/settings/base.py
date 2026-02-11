@@ -24,10 +24,10 @@ if READ_DOT_ENV_FILE:
 # -----------------------------------------------------------------------------
 DEBUG = env.bool("DJANGO_DEBUG", False)
 TIME_ZONE = "America/Guayaquil"
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "es-ec"
 LANGUAGES = [
-    ("en", _("English")),
     ("es", _("Spanish")),
+    ("en", _("English")),
 ]
 SITE_ID = 1
 SITE_NAME = "Elastómeros Ecuatorianos"
