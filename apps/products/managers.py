@@ -105,19 +105,16 @@ class ProductQuerySet(ActiveQuerySet):
 
     def with_active_images(self, limit=None):
         ProductImage = apps.get_model("products", "ProductImage")
-        queryset = ProductImage.objects.active().order_by("sort_order", "pk")
+        queryset = ProductImage.objects.active()
         if limit is not None:
-            queryset = (
-                queryset.annotate(
-                    rn=Window(
-                        expression=RowNumber(),
-                        partition_by=[F("product_id")],
-                        order_by=[F("sort_order").asc(), F("pk").asc()],
-                    ),
-                )
-                .filter(rn__lte=limit)
-                .order_by("sort_order", "pk")
-            )
+            queryset = queryset.annotate(
+                rn=Window(
+                    expression=RowNumber(),
+                    partition_by=[F("product_id")],
+                    order_by=[F("sort_order").asc(), F("pk").asc()],
+                ),
+            ).filter(rn__lte=limit)
+        queryset = queryset.order_by("sort_order", "pk")
         return self.prefetch_related(
             Prefetch(
                 "images",
