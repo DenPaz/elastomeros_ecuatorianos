@@ -17,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument("--with-category-images", action="store_true")
         parser.add_argument("--products-per-category", type=int, default=10)
         parser.add_argument("--variants-per-product", type=int, default=3)
-        parser.add_argument("--images-per-product", type=int, default=3)
+        parser.add_argument("--images-per-product", type=int, default=5)
         parser.add_argument("--clean", action="store_true")
 
     @transaction.atomic
