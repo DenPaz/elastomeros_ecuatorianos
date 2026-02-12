@@ -15,7 +15,7 @@ class ProductListView(ListView):
             super()
             .get_queryset()
             .active()
-            .with_active_images()
+            .with_active_images(limit=2)
             .with_price_range()
             .only("id", "name", "slug")
             .order_by("name")
