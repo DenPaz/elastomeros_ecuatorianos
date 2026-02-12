@@ -33,8 +33,10 @@
           {% block header %}
             {% include "includes/header.html" %}
           {% endblock header %}
-          {% block content %}
-          {% endblock content %}
+          <div class="container py-5 my-5">
+            {% block content %}
+            {% endblock content %}
+          </div>
         {% endblock main %}
       </main>
       {% block footer %}
