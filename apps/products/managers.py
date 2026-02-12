@@ -1,11 +1,14 @@
 from django.apps import apps
 from django.db import models
 from django.db.models import Count
+from django.db.models import F
 from django.db.models import Max
 from django.db.models import Min
 from django.db.models import Prefetch
 from django.db.models import Q
 from django.db.models import Sum
+from django.db.models import Window
+from django.db.models.functions import RowNumber
 
 from apps.core.managers import ActiveQuerySet
 
@@ -100,9 +103,21 @@ class ProductQuerySet(ActiveQuerySet):
             ),
         )
 
-    def with_active_images(self):
+    def with_active_images(self, limit=None):
         ProductImage = apps.get_model("products", "ProductImage")
-        queryset = ProductImage.objects.active().order_by("sort_order")
+        queryset = ProductImage.objects.active().order_by("sort_order", "pk")
+        if limit is not None:
+            queryset = (
+                queryset.annotate(
+                    rn=Window(
+                        expression=RowNumber(),
+                        partition_by=[F("product_id")],
+                        order_by=[F("sort_order").asc(), F("pk").asc()],
+                    ),
+                )
+                .filter(rn__lte=limit)
+                .order_by("sort_order", "pk")
+            )
         return self.prefetch_related(
             Prefetch(
                 "images",
