@@ -41,7 +41,7 @@ class User(UUIDModel, AbstractUser):
         return f"{self.get_full_name()} <{self.email}>"
 
 
-class UserProfile(models.Model):
+class UserProfile(UUIDModel):
     user = models.OneToOneField(
         to=User,
         verbose_name=_("User"),
