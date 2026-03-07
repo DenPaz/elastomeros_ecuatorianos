@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% trans "Permission Denied (403)" %}
+{% endblock title %}
+{% block content %}
+  <section class="row justify-content-center">
+    <div class="col-lg-6 col-md-8 col-10">
+      <div class="vstack align-items-center text-center gap-4">
+        <h1 class="display-1 fw-bold">403</h1>
+        <h2 class="h3">
+          {% if exception %}
+            {{ exception }}
+          {% else %}
+            {% trans "Permission Denied" %}
+          {% endif %}
+        </h2>
+        <p>{% trans "You don't have permission to access this page." %}</p>
+        <a href="{% url 'store:home' %}" class="btn btn-lg btn-primary w-75">{% trans "Go to Home" %}</a>
+      </div>
+    </div>
+  </section>
+{% endblock content %}

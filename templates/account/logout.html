@@ -1,0 +1,24 @@
+{% extends "account/_base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% trans "Sign out" %}
+{% endblock title %}
+{% block account_header %}
+  <div class="vstack align-items-center gap-2 mb-6">
+    <h1>{% trans "Sign out" %}</h1>
+    <p>{% trans "Are you sure you want to sign out?" %}</p>
+  </div>
+{% endblock account_header %}
+{% block account_body %}
+  {{ block.super }}
+  {% url 'account_logout' as logout_url %}
+  {% url 'store:home' as home_url %}
+  <form method="post" class="vstack gap-6" action="{{ logout_url }}">
+    {% csrf_token %}
+    {{ redirect_field }}
+    <button type="submit" class="btn btn-primary btn-lg">{% trans "Sign out" %}</button>
+    <a href="{{ home_url }}" class="btn btn-lg btn-secondary">{% trans "Return to home" %}</a>
+  </form>
+{% endblock account_body %}

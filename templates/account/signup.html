@@ -1,0 +1,115 @@
+{% extends "account/_base.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}
+  {% trans "Sign up" %}
+{% endblock title %}
+{% block account_header %}
+  <div class="vstack align-items-center gap-2 mb-6">
+    <h1>{% trans "Sign up" %}</h1>
+    <p>
+      {% trans "Already have an account?" %}
+      <a href="{{ login_url }}">{% trans "Sign in" %}</a>.
+    </p>
+  </div>
+{% endblock account_header %}
+{% block account_body %}
+  {{ block.super }}
+  {% url 'account_signup' as signup_url %}
+  {% trans "First name" as first_name_label %}
+  {% trans "Last name" as last_name_label %}
+  {% trans "Email address" as email_label %}
+  {% trans "Password" as password_label %}
+  {% trans "Confirm password" as password2_label %}
+  {% with WIDGET_ERROR_CLASS="border-danger" %}
+    <form method="post" action="{{ signup_url }}" class="vstack gap-6">
+      {% csrf_token %}
+      {{ redirect_field }}
+      <div class="vstack flex-md-row gap-6">
+        <div class="vstack gap-1">
+          <div class="position-relative">
+            <i class="ai-user fs-lg position-absolute top-50 start-0 translate-middle-y ms-4"></i>
+            {% render_field form.first_name class="form-control form-control-lg ps-12" placeholder=first_name_label autocomplete="given-name" autofocus=True %}
+          </div>
+          {% if form.first_name.errors %}
+            <div class="invalid-feedback d-block">
+              <ul class="list-unstyled mb-0">
+                {% for error in form.first_name.errors %}<li>{{ error }}</li>{% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+        <div class="vstack gap-1">
+          <div class="position-relative">
+            <i class="ai-user fs-lg position-absolute top-50 start-0 translate-middle-y ms-4"></i>
+            {% render_field form.last_name class="form-control form-control-lg ps-12" placeholder=last_name_label autocomplete="family-name" %}
+          </div>
+          {% if form.last_name.errors %}
+            <div class="invalid-feedback d-block">
+              <ul class="list-unstyled mb-0">
+                {% for error in form.last_name.errors %}<li>{{ error }}</li>{% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="vstack gap-1">
+        <div class="position-relative">
+          <i class="ai-mail fs-lg position-absolute top-50 start-0 translate-middle-y ms-4"></i>
+          {% render_field form.email class="form-control form-control-lg ps-12" placeholder=email_label autocomplete="email" %}
+        </div>
+        {% if form.email.errors %}
+          <div class="invalid-feedback d-block">
+            <ul class="list-unstyled mb-0">
+              {% for error in form.email.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+      <div class="vstack gap-1">
+        <div class="position-relative">
+          <i class="ai-lock-closed fs-lg position-absolute top-50 start-0 translate-middle-y ms-4"></i>
+          <div class="password-toggle">
+            {% render_field form.password1 class="form-control form-control-lg ps-12" placeholder=password_label autocomplete="new-password" %}
+            <label class="password-toggle-btn">
+              <input type="checkbox" class="password-toggle-check" />
+              <span class="password-toggle-indicator"></span>
+            </label>
+          </div>
+        </div>
+        <div class="form-text fs-sm">
+          {% trans "Use 8 or more characters with a mix of letters (uppercase and lowercase), numbers & symbols." %}
+        </div>
+        {% if form.password1.errors %}
+          <div class="invalid-feedback d-block">
+            <ul class="list-unstyled mb-0">
+              {% for error in form.password1.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+      <div class="vstack gap-1">
+        <div class="position-relative">
+          <i class="ai-lock-closed fs-lg position-absolute top-50 start-0 translate-middle-y ms-4"></i>
+          <div class="password-toggle">
+            {% render_field form.password2 class="form-control form-control-lg ps-12" placeholder=password2_label autocomplete="new-password" %}
+            <label class="password-toggle-btn">
+              <input type="checkbox" class="password-toggle-check" />
+              <span class="password-toggle-indicator"></span>
+            </label>
+          </div>
+        </div>
+        {% if form.password2.errors %}
+          <div class="invalid-feedback d-block">
+            <ul class="list-unstyled mb-0">
+              {% for error in form.password2.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+      <button type="submit" class="btn btn-lg btn-primary">{% trans "Sign up" %}</button>
+    </form>
+  {% endwith %}
+{% endblock account_body %}

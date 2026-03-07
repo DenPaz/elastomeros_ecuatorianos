@@ -1,0 +1,138 @@
+{% load i18n %}
+{% load static %}
+{% load core_tags %}
+
+{# Header #}
+<header class="navbar navbar-expand-lg sticky-top border-bottom shadow-sm bg-light">
+  <div class="container justify-content-sm-between justify-content-center gap-2">
+    {# Logo #}
+    <a href="{% url 'store:home' %}"
+       class="navbar-brand flex-shrink-0 order-lg-1">
+      <img src="{% static 'images/logo-elastomeros-text.svg' %}"
+           class="h-35px"
+           alt="Logo" />
+    </a>
+    {# Desktop search #}
+    <div class="d-none d-lg-block flex-grow-1 mx-4 order-lg-3">
+      <form method="get" action="#" class="input-group p-0">
+        <input type="search"
+               class="form-control"
+               placeholder="{% trans 'Search products...' %}" />
+        <button type="submit" class="btn btn-icon btn-primary">
+          <i class="ai-search"></i>
+        </button>
+      </form>
+    </div>
+    {# User actions #}
+    <div class="nav justify-content-center align-items-center gap-2 order-lg-4">
+      {# Theme mode switch #}
+      <div class="form-check form-switch mode-switch p-2" data-bs-toggle="mode">
+        <input id="themeMode" type="checkbox" class="form-check-input" />
+        <label for="themeMode" class="form-check-label">
+          <i class="ai-sun fs-lg"></i>
+        </label>
+        <label for="themeMode" class="form-check-label">
+          <i class="ai-moon fs-lg"></i>
+        </label>
+      </div>
+      {# Wishlist #}
+      <a href="#" class="nav-link fs-4 p-2">
+        <i class="ai-heart"></i>
+        <span class="badge badge-float bg-primary">0</span>
+      </a>
+      {# Cart #}
+      <a href="#" class="nav-link fs-4 p-2">
+        <i class="ai-cart"></i>
+        <span class="badge badge-float bg-primary">0</span>
+      </a>
+      {# User account dropdown #}
+      <div class="dropdown nav d-block">
+        <button type="button"
+                class="nav-link p-2"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+          <img src="{% if user.is_authenticated %}{{ user.profile.get_avatar_url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
+               class="border rounded-circle h-45px"
+               alt="Avatar" />
+        </button>
+        <div class="dropdown-menu dropdown-menu-end">
+          {% if user.is_authenticated %}
+            <h6 class="dropdown-header fw-medium text-body-secondary text-uppercase">{% trans "Account" %}</h6>
+            {% if user.is_staff %}
+              <a href="{% url 'admin:index' %}" class="dropdown-item">
+                <i class="ai-shield fs-lg opacity-70 me-2"></i>
+                {% trans "Admin panel" %}
+              </a>
+            {% endif %}
+            <a href="#" class="dropdown-item">
+              <i class="ai-user-check fs-lg opacity-70 me-2"></i>
+              {% trans "Overview" %}
+            </a>
+            <a href="#" class="dropdown-item">
+              <i class="ai-settings fs-lg opacity-70 me-2"></i>
+              {% trans "Settings" %}
+            </a>
+            <a href="#" class="dropdown-item">
+              <i class="ai-wallet fs-lg opacity-70 me-2"></i>
+              {% trans "Billing" %}
+            </a>
+            <a href="#" class="dropdown-item">
+              <i class="ai-cart fs-lg opacity-70 me-2"></i>
+              {% trans "Orders" %}
+            </a>
+            <hr class="dropdown-divider" />
+            <form method="post" action="{% url 'account_logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="dropdown-item">
+                <i class="ai-logout fs-lg opacity-70 me-2"></i>
+                {% trans "Sign out" %}
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'account_login' %}" class="dropdown-item">
+              <i class="ai-login fs-lg opacity-70 me-2"></i>
+              {% trans "Sign in" %}
+            </a>
+            <a href="{% url 'account_signup' %}" class="dropdown-item">
+              <i class="ai-user-plus fs-lg opacity-70 me-2"></i>
+              {% trans "Register" %}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      {# Mobile menu toggle #}
+      <button type="button"
+              class="navbar-toggler p-2"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    {# Collapsible navigation for mobile #}
+    <div id="navbarNav"
+         class="collapse navbar-collapse flex-grow-0 order-lg-2">
+      {# Mobile search #}
+      <div class="d-lg-none mt-3 mx-3 mb-0">
+        <form method="get" action="#" class="input-group p-0">
+          <input type="search"
+                 class="form-control"
+                 placeholder="{% trans 'Search products...' %}" />
+          <button type="submit" class="btn btn-icon btn-primary">
+            <i class="ai-search"></i>
+          </button>
+        </form>
+      </div>
+      {# Navigation links #}
+      <ul class="navbar-nav navbar-nav-scroll flex-lg-wrap mh-400px">
+        <li class="nav-item {% active_class 'store:home' %}">
+          <a href="{% url 'store:home' %}" class="nav-link">{% trans "Home" %}</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">{% trans "Products" %}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>

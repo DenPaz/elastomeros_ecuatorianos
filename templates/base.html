@@ -1,0 +1,61 @@
+{% load i18n %}
+{% load static %}
+{% load django_htmx %}
+
+<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}" data-bs-theme="light">
+  <head>
+    <title>
+      {% block title %}
+        {{ page_title|default:_("Welcome!") }}
+      {% endblock title %}
+      | Elastómeros Ecuatorianos
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Elastómeros Ecuatorianos Store" />
+    <meta name="author" content="Dennis Paz" />
+    <link href="{% static 'images/logo-elastomeros-icon.svg' %}" rel="icon" />
+    {% block css %}
+      {% include "partials/styles.html" %}
+    {% endblock css %}
+    {% block extra_css %}
+    {% endblock extra_css %}
+    {% htmx_script %}
+  </head>
+  <body class="{% block body_class %}{% endblock body_class %}"
+        hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+    {% block body %}
+      <main class="page-wrapper">
+        {% block main %}
+          {% block header %}
+            {% include "partials/header.html" %}
+          {% endblock header %}
+          <div class="container py-5 mt-5">
+            {% block content %}
+            {% endblock content %}
+          </div>
+        {% endblock main %}
+      </main>
+      {% block footer %}
+        {% include "partials/footer.html" %}
+      {% endblock footer %}
+      {% block extras %}
+        {% include "partials/extras.html" %}
+      {% endblock extras %}
+      {% block modals %}
+      {% endblock modals %}
+      {% block offcanvas %}
+      {% endblock offcanvas %}
+      {% block js %}
+        {% include "partials/scripts.html" %}
+      {% endblock js %}
+      {% block extra_js %}
+      {% endblock extra_js %}
+      {% block messages %}
+        {% include "partials/messages.html" %}
+      {% endblock messages %}
+    {% endblock body %}
+  </body>
+</html>
