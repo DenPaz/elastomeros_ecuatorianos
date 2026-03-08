@@ -232,10 +232,10 @@ class TestProductQuerySet:
         )
         queryset = Product.objects.with_price_range(active_only=True)
         product_from_queryset = queryset.get(id=product.id)
-        assert hasattr(product_from_queryset, "_min_price")
-        assert hasattr(product_from_queryset, "_max_price")
-        assert product_from_queryset._min_price == Decimal("10.00")  # noqa: SLF001
-        assert product_from_queryset._max_price == Decimal("20.00")  # noqa: SLF001
+        assert hasattr(product_from_queryset, "min_price")
+        assert hasattr(product_from_queryset, "max_price")
+        assert product_from_queryset.min_price == Decimal("10.00")
+        assert product_from_queryset.max_price == Decimal("20.00")
 
     def test_with_price_range_method_calculates_price_range_for_all_variants(self):
         product = ProductFactory(
@@ -247,10 +247,10 @@ class TestProductQuerySet:
         )
         queryset = Product.objects.with_price_range(active_only=False)
         product_from_queryset = queryset.get(id=product.id)
-        assert hasattr(product_from_queryset, "_min_price")
-        assert hasattr(product_from_queryset, "_max_price")
-        assert product_from_queryset._min_price == Decimal("10.00")  # noqa: SLF001
-        assert product_from_queryset._max_price == Decimal("30.00")  # noqa: SLF001
+        assert hasattr(product_from_queryset, "min_price")
+        assert hasattr(product_from_queryset, "max_price")
+        assert product_from_queryset.min_price == Decimal("10.00")
+        assert product_from_queryset.max_price == Decimal("30.00")
 
     def test_with_total_stock_method_calculates_total_stock_for_active_variants(self):
         product = ProductFactory(

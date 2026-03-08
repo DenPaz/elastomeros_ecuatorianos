@@ -74,15 +74,18 @@ class Category(UUIDModel, TimeStampedModel):
         return self.name
 
     def get_absolute_url(self) -> str:
+        """Return the product list URL filtered by this category."""
         return reverse("products:product_list") + f"?category={self.slug}"
 
     def get_image_url(self) -> str:
+        """Return the category image URL or a default one if not set."""
         if self.image:
             return self.image.url
         return get_default_image_url()
 
     @property
     def product_count(self) -> int:
+        """Return the annotated product count, or 0 if not annotated."""
         return getattr(self, "_product_count", 0)
 
 
@@ -118,6 +121,7 @@ class AttributesSchema(UUIDModel, TimeStampedModel):
 
     @property
     def attributes(self) -> list[dict]:
+        """Return a sorted list of attribute titles from the schema properties."""
         properties = self.schema.get("properties", {})
         attributes = [
             value.get("title", key)
@@ -177,12 +181,14 @@ class Product(UUIDModel, TimeStampedModel):
         return self.name
 
     def get_absolute_url(self) -> str:
+        """Return the product detail URL."""
         return reverse("products:product_detail", kwargs={"slug": self.slug})
 
     @property
     def price_range(self) -> str:
-        min_price = getattr(self, "_min_price", None)
-        max_price = getattr(self, "_max_price", None)
+        """Return a formatted price range string from annotated min/max prices."""
+        min_price = getattr(self, "min_price", None)
+        max_price = getattr(self, "max_price", None)
         if min_price is None or max_price is None:
             return ""
         if min_price == max_price:
@@ -191,6 +197,7 @@ class Product(UUIDModel, TimeStampedModel):
 
     @property
     def total_stock(self) -> int:
+        """Return the annotated total stock, or 0 if not annotated."""
         return getattr(self, "_total_stock", 0)
 
 

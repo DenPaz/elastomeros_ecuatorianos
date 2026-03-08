@@ -16,6 +16,7 @@ from apps.core.managers import ActiveQuerySet
 
 class CategoryQuerySet(ActiveQuerySet):
     def with_products(self, *, active_only=True):
+        """Prefetch related products, ordered by name."""
         Product = apps.get_model("products", "Product")
         queryset = Product.objects.active() if active_only else Product.objects.all()
         queryset = queryset.order_by("name")
@@ -28,6 +29,7 @@ class CategoryQuerySet(ActiveQuerySet):
         )
 
     def with_product_count(self, *, active_only=True):
+        """Annotate each category with its product count."""
         product_filter = Q(products__is_active=True) if active_only else Q()
         return self.annotate(
             _product_count=Count(
@@ -52,9 +54,11 @@ class AttributesSchemaManager(models.Manager.from_queryset(AttributesSchemaQuery
 
 class ProductQuerySet(ActiveQuerySet):
     def with_category(self):
+        """Select related category in the same query."""
         return self.select_related("category")
 
     def with_variants(self, *, active_only=True):
+        """Prefetch related variants, ordered by sort order and SKU."""
         ProductVariant = apps.get_model("products", "ProductVariant")
         queryset = (
             ProductVariant.objects.active()
@@ -71,6 +75,7 @@ class ProductQuerySet(ActiveQuerySet):
         )
 
     def with_images(self, *, active_only=True, limit=None):
+        """Prefetch related images, ordered by sort order and ID."""
         ProductImage = apps.get_model("products", "ProductImage")
         queryset = (
             ProductImage.objects.active() if active_only else ProductImage.objects.all()
@@ -93,19 +98,21 @@ class ProductQuerySet(ActiveQuerySet):
         )
 
     def with_price_range(self, *, active_only=True):
+        """Annotate each product with its minimum and maximum variant price."""
         variant_filter = Q(variants__is_active=True) if active_only else Q()
         return self.annotate(
-            _min_price=Min(
+            min_price=Min(
                 "variants__price",
                 filter=variant_filter,
             ),
-            _max_price=Max(
+            max_price=Max(
                 "variants__price",
                 filter=variant_filter,
             ),
         )
 
     def with_total_stock(self, *, active_only=True):
+        """Annotate each product with the sum of its variant stock."""
         variant_filter = Q(variants__is_active=True) if active_only else Q()
         return self.annotate(
             _total_stock=Coalesce(
@@ -121,6 +128,7 @@ class ProductManager(models.Manager.from_queryset(ProductQuerySet)):
 
 class ProductVariantQuerySet(ActiveQuerySet):
     def with_product(self):
+        """Select related product in the same query."""
         return self.select_related("product")
 
 
@@ -130,6 +138,7 @@ class ProductVariantManager(models.Manager.from_queryset(ProductVariantQuerySet)
 
 class ProductImageQuerySet(ActiveQuerySet):
     def with_product(self):
+        """Select related product in the same query."""
         return self.select_related("product")
 
 

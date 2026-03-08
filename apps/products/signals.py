@@ -9,4 +9,5 @@ from .models import AttributesSchema
 
 @receiver([post_save, post_delete], sender=AttributesSchema)
 def clear_attributes_schema_cache(sender, **kwargs):
+    """Clear the attributes schema cache when a schema is saved or deleted."""
     cache.delete(ATTRIBUTES_SCHEMA_CACHE_KEY)
