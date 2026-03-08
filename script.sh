@@ -10,4 +10,5 @@ uv run manage.py migrate
 uv run manage.py update_site
 uv run manage.py create_test_superusers
 uv run manage.py create_test_users
+uv run manage.py create_test_products
 uv run manage.py runserver
