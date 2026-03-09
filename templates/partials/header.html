@@ -129,8 +129,8 @@
         <li class="nav-item {% active_class 'store:home' %}">
           <a href="{% url 'store:home' %}" class="nav-link">{% trans "Home" %}</a>
         </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link">{% trans "Products" %}</a>
+        <li class="nav-item {% active_class 'products:product_list' %}">
+          <a href="{% url 'products:product_list' %}" class="nav-link">{% trans "Products" %}</a>
         </li>
       </ul>
     </div>

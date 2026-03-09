@@ -1,0 +1,169 @@
+{% extends "products/_base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+  {% trans "Product Catalog" %}
+{% endblock title %}
+{% block content %}
+  {# Header #}
+  <div class="row mb-4">
+    <div class="col-lg-9 offset-lg-3">
+      <h1>{% trans "Product Catalog" %}</h1>
+    </div>
+  </div>
+  <form method="get"
+        hx-get="{% url 'products:product_list' %}"
+        hx-target="#product-grid"
+        hx-trigger="change"
+        hx-push-url="true"
+        hx-vals='{"page": 1}'
+        hx-swap="outerHTML">
+    <div class="row mb-4">
+      <aside class="col-lg-3">
+        <div id="productFilters"
+             class="offcanvas-lg offcanvas-start"
+             tabindex="-1">
+          <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title">{% trans "Filters" %}</h5>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="{% trans 'Close' %}"></button>
+          </div>
+          <div class="offcanvas-body pe-lg-4">
+            <h3 class="h5">{% trans "Categories" %}</h3>
+            <div>
+              {% for category in filter_categories %}
+                <div class="form-check">
+                  <input type="checkbox"
+                         id="id_categories_{{ forloop.counter0 }}"
+                         name="categories"
+                         value="{{ category.slug }}"
+                         {% if category.slug in selected_categories %}checked{% endif %}
+                         class="form-check-input" />
+                  <label for="id_categories_{{ forloop.counter0 }}"
+                         class="form-check-label d-flex align-items-center">
+                    <span class="text-nav fw-medium">{{ category.name }}</span>
+                    <span class="fs-xs text-body-secondary ms-auto">{{ category.product_count }}</span>
+                  </label>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </aside>
+      <div class="col-lg-9">
+        <div class="d-flex align-items-start justify-content-between mb-4">
+          <!-- Active filters -->
+          <div class="me-3">
+            <div class="nav d-md-none">
+              <a href="#active-filters"
+                 class="nav-link dropdown-toggle fs-sm p-0"
+                 data-bs-toggle="collapse">{% trans "Active filters" %}</a>
+            </div>
+            <div id="active-filters" class="collapse d-md-block">
+              <div class="pt-2 pt-md-0">
+                <a href="#"
+                   class="d-inline-block border rounded-pill fs-xs fw-medium text-body text-decoration-none py-1 px-2 me-2 mb-2">
+                  <span class="d-inline-flex align-items-center text-nowrap px-1">
+                    Clocks<i class="ai-circle-x fs-base ms-1"></i>
+                  </span>
+                </a>
+                <button type="button"
+                        class="btn btn-sm btn-secondary rounded-pill fw-medium py-1 px-2">
+                  <span class="px-1">{% trans "Clear all" %}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Sorting -->
+          <div class="d-flex align-items-center flex-shrink-0">
+            <span class="text-body-secondary text-nowrap fs-sm">{% trans "Sort by" %}:</span>
+            {{ filter.form.ordering|add_class:"form-select form-select-flush py-0" }}
+          </div>
+        </div>
+        {% partialdef product-grid inline %}
+          <div id="product-grid">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+              {% for product in products %}
+                <div class="col pb-2 pb-sm-3">
+                  <div class="card-hover position-relative bg-secondary rounded-1 p-3 mb-4">
+                    <button type="button"
+                            class="btn btn-icon btn-sm btn-light bg-light border-0 rounded-circle position-absolute top-0 end-0 mt-3 me-3 z-5 opacity-0"
+                            aria-label="{% trans 'Add to Favorites' %}">
+                      <i class="ai-heart fs-xl text-nav"></i>
+                    </button>
+                    <div class="swiper swiper-nav-onhover"
+                         data-swiper-options='{"loop": true, "navigation": {"prevEl": ".btn-prev", "nextEl": ".btn-next"}}'>
+                      <a href="{{ product.get_absolute_url }}" class="swiper-wrapper">
+                        {% for image in product.active_images %}
+                          <div class="swiper-slide p-2 p-xl-4">
+                            <img src="{{ image.image.url }}"
+                                 class="d-block mx-auto object-fit-contain"
+                                 style="width: auto;
+                                        height: 250px;
+                                        max-width:100%"
+                                 alt="{{ image.alt_text }}" />
+                          </div>
+                        {% empty %}
+                          <div class="swiper-slide p-2 p-xl-4">
+                            <img src="{% static 'images/default-image.png' %}"
+                                 class="d-block mx-auto object-fit-contain"
+                                 style="width: auto;
+                                        height: 250px;
+                                        max-width:100%"
+                                 alt="{{ product.name }}" />
+                          </div>
+                        {% endfor %}
+                      </a>
+                      <button type="button"
+                              class="btn btn-prev btn-icon btn-sm btn-light bg-light border-0 rounded-circle start-0"
+                              aria-label="{% trans 'Previous' %}">
+                        <i class="ai-chevron-left fs-xl text-nav"></i>
+                      </button>
+                      <button type="button"
+                              class="btn btn-next btn-icon btn-sm btn-light bg-light border-0 rounded-circle end-0"
+                              aria-label="{% trans 'Next' %}">
+                        <i class="ai-chevron-right fs-xl text-nav"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <h3 class="h6 mb-0">
+                      <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                    </h3>
+                  </div>
+                  <div class="d-flex align-items-center">
+                    <span class="me-2">{{ product.price_range }}</span>
+                    <div class="nav ms-auto"
+                         data-bs-toggle="tooltip"
+                         title="{% trans 'Add to Cart' %}">
+                      <a href="#" class="nav-link fs-lg py-2 px-1">
+                        <i class="ai-cart"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="col">
+                  <p class="text-body-secondary">{% trans "No products found." %}</p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endpartialdef %}
+      </div>
+    </div>
+  </form>
+  <button type="button"
+          class="btn btn-primary d-lg-none rounded-0 fixed-bottom"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#productFilters"
+          aria-controls="productFilters">
+    <i class="ai-filter me-2"></i>
+    {% trans "Filters" %}
+  </button>
+{% endblock content %}
