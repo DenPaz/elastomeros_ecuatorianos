@@ -24,7 +24,7 @@
       </form>
     </div>
     {# User actions #}
-    <div class="nav justify-content-center align-items-center gap-2 order-lg-4">
+    <div class="nav flex-nowrap justify-content-center align-items-center gap-2 order-lg-4">
       {# Theme mode switch #}
       <div class="form-check form-switch mode-switch p-2" data-bs-toggle="mode">
         <input id="themeMode" type="checkbox" class="form-check-input" />
@@ -52,7 +52,7 @@
                 data-bs-toggle="dropdown"
                 aria-expanded="false">
           <img src="{% if user.is_authenticated %}{{ user.profile.get_avatar_url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
-               class="border rounded-circle h-45px"
+               class="border rounded-circle h-45px min-w-45px"
                alt="Avatar" />
         </button>
         <div class="dropdown-menu dropdown-menu-end">
@@ -125,7 +125,7 @@
         </form>
       </div>
       {# Navigation links #}
-      <ul class="navbar-nav navbar-nav-scroll flex-lg-wrap mh-400px">
+      <ul class="navbar-nav navbar-nav-scroll mh-400px">
         <li class="nav-item {% active_class 'store:home' %}">
           <a href="{% url 'store:home' %}" class="nav-link">{% trans "Home" %}</a>
         </li>
