@@ -33,6 +33,7 @@ dependencies = [
   "django-storages[s3]==1.14.6",
   "django-template-partials==25.3",
   "django-widget-tweaks==1.5.1",
+  "factory-boy==3.3.3",
   "gunicorn==25.1.0",
   "hiredis==3.3.0",
   "pillow==12.1.1",
