@@ -150,3 +150,28 @@
     });
   });
 })();
+
+// Initialize Swiper carousels on page load and after HTMX swaps or modals
+(function () {
+  if (typeof Swiper === "undefined") return;
+
+  function initSwiper(root = document) {
+    if (!(root instanceof Element || root instanceof Document)) return;
+    root.querySelectorAll(".swiper-nav-onhover").forEach((el) => {
+      if (el.swiper) {
+        el.swiper.destroy();
+      }
+      const options = JSON.parse(el.dataset.swiperOptions || "{}");
+      if (options.navigation) {
+        options.navigation.prevEl = el.querySelector(".btn-prev");
+        options.navigation.nextEl = el.querySelector(".btn-next");
+      }
+      new Swiper(el, options);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => initSwiper());
+  document.addEventListener("htmx:afterSwap", (e) => initSwiper(e.target));
+  document.addEventListener("htmx:afterSettle", (e) => initSwiper(e.target));
+  document.addEventListener("shown.bs.modal", (e) => initSwiper(e.target));
+})();
