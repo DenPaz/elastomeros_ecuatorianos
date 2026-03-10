@@ -6,8 +6,7 @@
 
   function hideNavbar() {
     if (!navbar.classList.contains("show")) return;
-    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(navbar);
-    bsCollapse.hide();
+    bootstrap.Collapse.getOrCreateInstance(navbar).hide();
   }
 
   document.addEventListener("pointerdown", (event) => {
@@ -17,13 +16,25 @@
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      hideNavbar();
-    }
+    if (event.key === "Escape") hideNavbar();
   });
 })();
 
-/* Toast messages — server-rendered + HTMX HX-Trigger */
+// Page loading animation
+(function () {
+  window.addEventListener("load", function () {
+    const preloader = document.querySelector(".page-loading");
+    if (!preloader) return;
+
+    preloader.classList.remove("active");
+
+    setTimeout(function () {
+      preloader.remove();
+    }, 1500);
+  });
+})();
+
+// Toast messages — server-rendered + HTMX HX-Trigger
 (function () {
   function escapeHtml(text) {
     var div = document.createElement("div");
@@ -31,12 +42,27 @@
     return div.innerHTML;
   }
 
+  function resetBarAnimation(bar) {
+    if (!bar) return;
+    bar.style.animation = "none";
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        bar.style.animation = "";
+        bar.style.animationPlayState = "running";
+      });
+    });
+  }
+
   function initToast(el) {
-    var delay = parseInt(el.getAttribute("data-bs-delay") || "2000", 10);
-    var timeoutId = null;
-    var bar = el.querySelector(".timer-bar");
-    var controller = new AbortController();
-    var signal = controller.signal;
+    const DEFAULT_DELAY = 2000;
+    const delay = parseInt(
+      el.getAttribute("data-bs-delay") || DEFAULT_DELAY,
+      10,
+    );
+    const bar = el.querySelector(".timer-bar");
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let timeoutId = null;
 
     el.style.setProperty("--toast-delay", delay + "ms");
 
@@ -56,14 +82,10 @@
     el.addEventListener(
       "shown.bs.toast",
       function () {
-        if (bar) {
-          bar.style.animation = "none";
-          bar.offsetHeight;
-          bar.style.animation = "";
-        }
+        resetBarAnimation(bar);
         start(delay);
       },
-      { signal: signal },
+      { signal },
     );
 
     el.addEventListener(
@@ -73,7 +95,7 @@
         controller.abort();
         el.remove();
       },
-      { signal: signal },
+      { signal },
     );
 
     el.addEventListener(
@@ -81,21 +103,16 @@
       function () {
         pause();
       },
-      { signal: signal },
+      { signal },
     );
 
     el.addEventListener(
       "mouseleave",
       function () {
-        if (bar) {
-          bar.style.animation = "none";
-          bar.offsetHeight;
-          bar.style.animation = "";
-          bar.style.animationPlayState = "running";
-        }
+        resetBarAnimation(bar);
         start(delay);
       },
-      { signal: signal },
+      { signal },
     );
 
     new bootstrap.Toast(el).show();
@@ -106,18 +123,19 @@
   });
 
   document.body.addEventListener("messages", function (event) {
-    var container = document.getElementById("toast-container");
-    var messages = event.detail.value || event.detail;
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+    const messages = event.detail.value || event.detail;
 
     messages.forEach(function (msg) {
-      var level = msg.tags || "info";
-      var el = document.createElement("div");
+      const level = msg.tags || "info";
+      const el = document.createElement("div");
       el.className = "toast fade text-bg-" + level;
       el.setAttribute("role", "alert");
       el.setAttribute("aria-live", "assertive");
       el.setAttribute("aria-atomic", "true");
       el.setAttribute("data-bs-autohide", "false");
-      el.setAttribute("data-bs-delay", "2000");
+      el.setAttribute("data-bs-delay", String(DEFAULT_DELAY));
       el.innerHTML =
         '<div class="d-flex justify-content-between align-items-center">' +
         '<div class="toast-body">' +
@@ -127,7 +145,6 @@
         'data-bs-dismiss="toast" aria-label="Close"></button>' +
         "</div>" +
         '<div class="toast-timer"><div class="timer-bar"></div></div>';
-
       container.appendChild(el);
       initToast(el);
     });
