@@ -4,7 +4,6 @@ from django_filters.views import FilterView
 from apps.core.viewmixins import HtmxTemplateMixin
 
 from .filters import ProductFilter
-from .models import Category
 from .models import Product
 
 
@@ -26,17 +25,6 @@ class ProductListView(HtmxTemplateMixin, FilterView):
             .only("id", "name", "slug")
             .order_by("name")
         )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["filter_categories"] = (
-            Category.objects.active()
-            .with_product_count()
-            .only("id", "name", "slug")
-            .order_by("name")
-        )
-        context["selected_categories"] = set(self.request.GET.getlist("categories"))
-        return context
 
 
 class ProductDetailView(DetailView):

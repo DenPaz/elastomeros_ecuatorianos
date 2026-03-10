@@ -27,11 +27,10 @@ class TestCategoryModel:
         category = CategoryFactory(name="Electronics")
         assert str(category) == "Electronics"
 
-    @pytest.mark.skip(reason="URL pattern not implemented yet")
     def test_get_absolute_url_method(self):
-        category = CategoryFactory(name="Books")
+        category = CategoryFactory(slug="books")
         url = category.get_absolute_url()
-        assert url == "/products/?category=Books"
+        assert url == "/products/?category=books"
 
     def test_get_image_url_method_returns_default_when_no_image(self):
         category = CategoryFactory()
@@ -117,7 +116,6 @@ class TestProductModel:
         product = ProductFactory(name="Smartphone")
         assert str(product) == "Smartphone"
 
-    @pytest.mark.skip(reason="URL pattern not implemented yet")
     def test_get_absolute_url_method(self):
         product = ProductFactory(name="Laptop")
         url = product.get_absolute_url()

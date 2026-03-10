@@ -7,16 +7,21 @@ from .models import Product
 
 
 class ProductFilter(django_filters.FilterSet):
-    categories = django_filters.ModelMultipleChoiceFilter(
+    category = django_filters.ModelMultipleChoiceFilter(
         field_name="category__slug",
         to_field_name="slug",
-        queryset=Category.objects.active(),
+        queryset=(
+            Category.objects.active()
+            .with_product_count()
+            .only("id", "name", "slug")
+            .order_by("name")
+        ),
+        widget=forms.CheckboxSelectMultiple,
     )
     ordering = django_filters.OrderingFilter(
         fields=(
             ("name", "name"),
             ("min_price", "min_price"),
-            ("max_price", "max_price"),
         ),
         choices=(
             ("name", _("A-Z order")),
@@ -30,4 +35,10 @@ class ProductFilter(django_filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ["categories", "ordering"]
+        fields = ["category", "ordering"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form.fields["category"].label_from_instance = lambda obj: (
+            f"{obj.name} ({obj.product_count})"
+        )

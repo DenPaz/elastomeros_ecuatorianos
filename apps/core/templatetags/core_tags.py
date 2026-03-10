@@ -58,3 +58,27 @@ def active_class(
             return ""
 
     return css_class
+
+
+def _split_label(label: str) -> tuple[str, str]:
+    """Split a 'Name (count)' formatted label into its name and count components."""
+    if not label:
+        return "", ""
+    name, sep, count = label.rpartition(" (")
+    if not sep:
+        return label, ""
+    return name, count.rstrip(")")
+
+
+@register.filter
+def label_text(label: str) -> str:
+    """Extract the text portion from a 'Name (count)' formatted label."""
+    name, _ = _split_label(label)
+    return name
+
+
+@register.filter
+def label_count(label: str) -> str:
+    """Extract the count portion from a 'Name (count)' formatted label."""
+    _, count = _split_label(label)
+    return count
