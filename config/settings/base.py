@@ -66,6 +66,7 @@ DJANGO_APPS = [
     "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     "django.contrib.humanize",
     "django.contrib.admin",
     "django.forms",
@@ -81,8 +82,7 @@ THIRD_PARTY_APPS = [
     "extra_views",
     "django_htmx",
     "widget_tweaks",
-    "django_cotton.apps.SimpleAppConfig",
-    "template_partials.apps.SimpleAppConfig",
+    "django_cotton",
     "django_filters",
     "formtools",
     "django_jsonform",
@@ -175,22 +175,8 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [str(BASE_DIR / "templates")],
+        "APP_DIRS": True,
         "OPTIONS": {
-            "loaders": [
-                (
-                    "template_partials.loader.Loader",
-                    [
-                        (
-                            "django.template.loaders.cached.Loader",
-                            [
-                                "django_cotton.cotton_loader.Loader",
-                                "django.template.loaders.filesystem.Loader",
-                                "django.template.loaders.app_directories.Loader",
-                            ],
-                        ),
-                    ],
-                ),
-            ],
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -201,10 +187,6 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "apps.users.context_processors.allauth_settings",
-            ],
-            "builtins": [
-                "django_cotton.templatetags.cotton",
-                "template_partials.templatetags.partials",
             ],
         },
     },
