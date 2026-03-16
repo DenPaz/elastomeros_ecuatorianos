@@ -33,7 +33,7 @@ dependencies = [
   "django-storages[s3]==1.14.6",
   "django-widget-tweaks==1.5.1",
   "gunicorn==25.1.0",
-  "hiredis==3.3.0",
+  "hiredis==3.3.1",
   "pillow==12.1.1",
   "psycopg[c]==3.3.3",
   "python-slugify==8.0.4",
@@ -53,7 +53,7 @@ dev = [
   "pytest==9.0.2",
   "pytest-django==4.12.0",
   "pytest-sugar==1.1.1",
-  "ruff==0.15.5",
+  "ruff==0.15.6",
   "watchfiles==1.1.1",
   "werkzeug[watchdog]==3.1.6",
 ]
