@@ -16,106 +16,104 @@
     </div>
   </div>
   <form method="get"
+        class="row mb-4"
         hx-get="{% url 'products:product_list' %}"
         hx-target="#product-grid"
         hx-trigger="change"
         hx-push-url="true"
         hx-vals='{"page": 1}'
-        hx-swap="outerHTML">
-    <div class="row mb-4">
-      {# Filters #}
-      <aside class="col-lg-3">
-        <div id="productFilters" class="offcanvas-lg offcanvas-start">
-          <div class="offcanvas-header border-bottom">
-            <h5 class="offcanvas-title">{% trans "Filters" %}</h5>
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="offcanvas"
-                    aria-label="{% trans 'Close' %}"></button>
-          </div>
-          <div class="offcanvas-body pe-lg-4">
-            <h3 class="h5">{% trans "Categories" %}</h3>
-            <div>
-              {% for category in filter.form.category %}
-                <div class="form-check">
-                  {% render_field category class="form-check-input" %}
-                  <label for="{{ category.id_for_label }}"
-                         class="form-check-label d-flex align-items-center">
-                    <span class="text-nav">{{ category.choice_label|label_text }}</span>
-                    <span class="fs-xs text-body-secondary ms-auto">{{ category.choice_label|label_count }}</span>
-                  </label>
-                </div>
-              {% endfor %}
-            </div>
+        hx-swap="innerHTML">
+    {# Filters #}
+    <aside class="col-lg-3">
+      <div id="productFilters" class="offcanvas-lg offcanvas-start">
+        <div class="offcanvas-header border-bottom">
+          <h5 class="offcanvas-title">{% trans "Filters" %}</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="offcanvas"
+                  data-bs-target="#productFilters"
+                  aria-label="{% trans 'Close' %}"></button>
+        </div>
+        <div class="offcanvas-body pe-lg-4">
+          <h3 class="h5">{% trans "Categories" %}</h3>
+          <div>
+            {% for category in filter.form.category %}
+              <div class="form-check">
+                {% render_field category class="form-check-input" %}
+                <label for="{{ category.id_for_label }}"
+                       class="form-check-label d-flex align-items-center">
+                  <span class="text-nav">{{ category.choice_label|label_text }}</span>
+                  <span class="fs-xs text-body-secondary ms-auto">{{ category.choice_label|label_count }}</span>
+                </label>
+              </div>
+            {% endfor %}
           </div>
         </div>
-      </aside>
-      <div class="col-lg-9">
-        {% partialdef product-grid inline %}
-          <div id="product-grid">
-            <div class="d-flex align-items-start justify-content-between mb-4">
-              {# Active filters #}
-              <div class="me-3">
-                <div class="nav d-md-none">
-                  <a href="#active-filters"
-                     class="nav-link dropdown-toggle fs-sm p-0"
-                     data-bs-toggle="collapse">{% trans "Active filters" %}</a>
-                </div>
-                <div id="active-filters" class="collapse d-md-block">
-                  <div class="pt-2 pt-md-0">
-                    {% for category in filter.form.category %}
-                      {% if category.data.selected %}
-                        <span class="d-inline-block border rounded-pill fs-xs fw-medium text-body py-1 px-2 me-2 mb-2">
-                          <span class="d-inline-flex align-items-center text-nowrap px-1">
-                            {{ category.choice_label|label_text }}
-                            <button type="button"
-                                    class="btn btn-link p-0 ms-1 text-body"
-                                    onclick="document.getElementById('{{ category.id_for_label }}').click();"
-                                    aria-label="{% blocktrans with name=category.choice_label|label_text trimmed %}Remove {{ name }}{% endblocktrans %}">
-                              <i class="ai-circle-x fs-base"></i>
-                            </button>
-                          </span>
-                        </span>
-                      {% endif %}
-                    {% endfor %}
-                    {% if filter.form.category.value %}
-                      <a href="{% url 'products:product_list' %}"
-                         class="btn btn-sm btn-secondary rounded-pill fw-medium py-1 px-2">
-                        <span class="px-1">{% trans "Clear all" %}</span>
-                      </a>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-              {# Sorting #}
-              <div class="d-flex align-items-center flex-shrink-0">
-                <span class="text-body-secondary text-nowrap fs-sm">{% trans "Sort by" %}:</span>
-                {% render_field filter.form.ordering class="form-select form-select-flush py-0" %}
-              </div>
+      </div>
+    </aside>
+    <div id="product-grid" class="col-lg-9">
+      {% partialdef product-grid inline %}
+        <div class="d-flex align-items-start justify-content-between mb-4">
+          {# Active filters #}
+          <div class="me-3">
+            <div class="nav d-md-none">
+              <a href="#activeFilters"
+                 class="nav-link dropdown-toggle fs-sm p-0 mb-2"
+                 data-bs-toggle="collapse">{% trans "Active filters" %}</a>
             </div>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-              {% for product in products %}
-                <div class="col pb-2 pb-sm-3">
-                  {% cotton products.product-card
-                    product_url="{{ product.get_absolute_url }}"
-                    product_name="{{ product.name }}"
-                    price_range="{{ product.price_range }}"
-                    images=product.active_images %}
-                  {% endcotton %}
-                </div>
-              {% empty %}
-                <div class="text-center py-12">
-                  <i class="ai-search display-4 text-body-secondary mb-4 d-block"></i>
-                  <h2 class="h5 mb-2">{% trans "No products found" %}</h2>
-                  <p class="text-body-secondary">{% trans "Try adjusting your filters or browse all products." %}</p>
-                </div>
-              {% endfor %}
+            <div id="activeFilters" class="collapse d-md-block">
+              <div class="pt-md-0 pt-2">
+                {% for category in filter.form.category %}
+                  {% if category.data.selected %}
+                    <span class="d-inline-flex align-items-center border rounded-pill fs-xs fw-medium text-body text-nowrap py-1 px-3 me-2 mb-2">
+                      {{ category.choice_label|label_text }}
+                      <button type="button"
+                              class="btn-close btn-sm ms-2"
+                              onclick="document.getElementById('{{ category.id_for_label }}').click()"
+                              aria-label="{% trans 'Remove filter' %}"></button>
+                    </span>
+                  {% endif %}
+                {% endfor %}
+                {% if filter.form.category.value %}
+                  <a href="{% url 'products:product_list' %}"
+                     class="btn btn-sm btn-secondary rounded-pill fw-medium py-1 px-2">
+                    <span class="px-1">{% trans "Clear all" %}</span>
+                  </a>
+                {% endif %}
+              </div>
             </div>
           </div>
-        {% endpartialdef product-grid %}
-      </div>
+          {# Sorting #}
+          <div class="d-flex align-items-center flex-shrink-0 mb-2">
+            <span class="text-body-secondary text-nowrap fs-sm me-lg-2">{% trans "Sort by" %}:</span>
+            {% render_field filter.form.ordering class="form-select form-select-flush py-0" %}
+          </div>
+        </div>
+        {# Product grid #}
+        {% if products %}
+          <div class="row row-cols-md-3 row-cols-sm-2 row-cols-1 g-4">
+            {% for product in products %}
+              <div class="col pb-2 pb-sm-3">
+                {% cotton products.product-card
+                  url="{{ product.get_absolute_url }}"
+                  name="{{ product.name }}"
+                  price_range="{{ product.price_range }}"
+                  images=product.active_images %}
+                {% endcotton %}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-12">
+            <i class="ai-search display-4 text-body-secondary mb-4 d-block"></i>
+            <h2 class="h5 mb-2">{% trans "No products found" %}</h2>
+            <p class="text-body-secondary mb-0">{% trans "Try adjusting your filters or browse all products." %}</p>
+          </div>
+        {% endif %}
+      {% endpartialdef product-grid %}
     </div>
   </form>
+  {# Mobile filters toggle button #}
   <button type="button"
           class="btn btn-primary d-lg-none rounded-0 fixed-bottom"
           data-bs-toggle="offcanvas"
